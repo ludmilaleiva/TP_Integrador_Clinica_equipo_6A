@@ -1,0 +1,231 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.Master.cs" Inherits="SistemaClinica.Maestra" %>
+
+<!DOCTYPE html>
+
+<html>
+<head runat="server">
+<meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clínica Médica - BioClinic</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ============================================================
+           SISTEMA DE DISEÑO: CLÍNICA (VARIABLES CSS)
+           ============================================================ */
+        :root {
+            /* Colores Principales */
+            --cp-principal: #00685f;              /* Deep Teal */
+            --cp-on-principal: #ffffff;
+            --cp-principal-contenedor: #008378;
+            --cp-secundario: #576065;
+            --cp-fondo-aplicacion: #f8f9ff;       /* Soft Blue wash */
+            --cp-superficie: #ffffff;
+            --cp-borde-suave: #e2e8f0;
+            --cp-linea-guia: #cbd5e1;
+
+            /* Capas de Superficie (Tonal Layers) */
+            --cp-sup-baja: #eff4ff;
+            --cp-sup-media: #e5eeff;
+            --cp-sup-alta: #dce9ff;
+
+            /* Estados Semánticos (Turnos y Alertas) */
+            --cp-exito: #10b981;                  /* Verde Esmeralda (Nuevo Turno) */
+            --cp-alerta: #f59e0b;                 /* Ámbar (Reprogramado) */
+            --cp-error: #ba1a1a;                  /* Carmesí (Cancelado) */
+
+            /* Tipografía (Inter) */
+            --font-inter: 'Inter', sans-serif;
+        }
+
+        /* Reemplazo Global de Estilos de Bootstrap */
+        body {
+            font-family: var(--font-inter);
+            background-color: var(--cp-fondo-aplicacion) !important;
+            color: #0b1c30;
+            font-size: 14px; /* body-md base */
+            line-height: 20px;
+        }
+
+        /* Encabezados */
+        h1, .headline-lg {
+            font-weight: 700;
+            font-size: 32px;
+            line-height: 40px;
+            letter-spacing: -0.02em;
+        }
+        h2, .headline-md {
+            font-weight: 600;
+            font-size: 24px;
+            line-height: 32px;
+        }
+        h3, .headline-sm {
+            font-weight: 600;
+            font-size: 20px;
+            line-height: 28px;
+        }
+
+        /* Personalización de la Barra de Navegación */
+        .navbar-clinica {
+            background-color: var(--cp-principal) !important;
+            border-bottom: 1px solid var(--cp-principal-contenedor);
+        }
+        .navbar-clinica .nav-link {
+            color: #f4fffc !important;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 0.5rem 1rem !important;
+            border-radius: 0.25rem;
+            transition: all 0.2s ease;
+        }
+        .navbar-clinica .nav-link:hover, .navbar-clinica .nav-item.active .nav-link {
+            background-color: var(--cp-principal-contenedor);
+            color: #ffffff !important;
+        }
+
+        /* Contenedores y Tarjetas (Superficies Nivel 1) */
+        .tarjeta-clinica {
+            background-color: var(--cp-superficie);
+            border: 1px solid var(--cp-borde-suave);
+            border-radius: 0.5rem !important; /* rounded-lg (8px) */
+            padding: 24px; /* espaciado relajado */
+        }
+
+        /* Botones del Sistema */
+        .btn-clinica-primario {
+            background-color: var(--cp-principal) !important;
+            border-color: var(--cp-principal) !important;
+            color: var(--cp-on-principal) !important;
+            font-weight: 600;
+            border-radius: 0.25rem; /* 4px base */
+            padding: 8px 16px;
+        }
+        .btn-clinica-primario:hover {
+            background-color: var(--cp-principal-contenedor) !important;
+        }
+        .btn-clinica-secundario {
+            background-color: var(--cp-superficie) !important;
+            border: 1px solid var(--cp-principal) !important;
+            color: var(--cp-principal) !important;
+            font-weight: 600;
+            border-radius: 0.25rem;
+        }
+        .btn-clinica-secundario:hover {
+            background-color: var(--cp-sup-baja) !important;
+        }
+
+        /* Campos de Entrada (Inputs) */
+        .form-control-clinica {
+            border: 1px solid var(--cp-linea-guia) !important;
+            border-radius: 0.25rem !important;
+            padding: 10px 14px;
+            font-size: 14px;
+        }
+        .form-control-clinica:focus {
+            border-color: var(--cp-principal) !important;
+            box-shadow: 0 0 0 2px rgba(0, 106, 97, 0.10) !important;
+            outline: none;
+        }
+
+        /* Etiquetas de Estado (Etiquetas en Píldora) */
+        .etiqueta-estado {
+            display: inline-block;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 9999px; /* rounded-full */
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .etiqueta-nuevo { background-color: rgba(16, 185, 129, 0.1); color: var(--cp-exito); }
+        .etiqueta-reprogramado { background-color: rgba(245, 158, 11, 0.1); color: var(--cp-alerta); }
+        .etiqueta-cancelado { background-color: rgba(186, 26, 26, 0.1); color: var(--cp-error); }
+
+        /* Tabla de Datos Médicos (Estilo Cebra Clínico) */
+        .tabla-clinica {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .tabla-clinica th {
+            background-color: var(--cp-superficie);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--cp-secundario);
+            padding: 12px 16px;
+            border-bottom: 2px solid var(--cp-borde-suave);
+            text-align: left;
+        }
+        .tabla-clinica td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--cp-borde-suave);
+            vertical-align: middle;
+        }
+        .tabla-clinica tbody tr:nth-child(even) {
+            background-color: #f8fafc; /* Relleno alternado de filas */
+        }
+
+        /* Indicador de Selección Izquierdo (Barra vertical acentuada) */
+        .item-activo {
+            border-left: 4px solid var(--cp-principal) !important;
+            border-top-left-radius: 0px !important;
+            border-bottom-left-radius: 0px !important;
+        }
+    </style>
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+    <form id="form1" runat="server">
+       <nav class="navbar navbar-expand-lg navbar-dark navbar-clinica shadow-sm mb-4">
+            <div class="container-fluid">
+                <a class="navbar-brand fw-bold fs-4 text-white" href="Default.aspx">
+                    <i class="fa-solid fa-user-md me-2"></i>BioClinic
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-1">
+                        <li class="nav-item">
+                            <a class="nav-link" href="Default.aspx"><i class="fa-solid fa-chart-pie me-1"></i> Panel Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="TurnosPacientes.aspx"><i class="fa-solid fa-calendar-plus me-1"></i> Asignar Turno</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="ListadoTurnos.aspx"><i class="fa-solid fa-table-list me-1"></i> Control de Turnos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Pacientes.aspx"><i class="fa-solid fa-address-book me-1"></i> Registro Pacientes</a>
+                        </li>
+                    </ul>
+                    <div class="d-flex text-white align-items-center">
+                        <span class="badge bg-light text-dark px-3 py-2"><i class="fa-solid fa-flask me-1"></i> Entorno de Desarrollo</span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container pb-5">
+            <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+            </asp:ContentPlaceHolder>
+        </div>
+
+        <footer class="text-center text-muted py-3 bg-white border-top fixed-bottom" style="position: relative; margin-top: 80px;">
+            <div class="container">
+                <small>&copy; <%: DateTime.Now.Year %> - Sistema de Gestión Clinico - </small>
+            </div>
+        </footer>
+
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
