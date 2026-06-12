@@ -205,9 +205,7 @@
                             <a class="nav-link" href="Pacientes.aspx"><i class="fa-solid fa-address-book me-1"></i> Registro Pacientes</a>
                         </li>
                     </ul>
-                    <div class="d-flex text-white align-items-center">
-                        <span class="badge bg-light text-dark px-3 py-2"><i class="fa-solid fa-flask me-1"></i> Entorno de Desarrollo</span>
-                    </div>
+                    
                 </div>
             </div>
         </nav>
