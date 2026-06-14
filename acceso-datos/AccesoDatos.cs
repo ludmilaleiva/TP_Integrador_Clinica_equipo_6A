@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Data.SqlClient;
 using System.Data;
 
-namespace negocio
+namespace acceso_datos
 {
     public class AccesoDatos
     {
@@ -25,7 +25,7 @@ namespace negocio
         public AccesoDatos()
         {
             // Cambiá "Server=." por el nombre de tu instancia de SQL si usas una específica (ej: .\SQLEXPRESS)
-            conexion = new SqlConnection("server=.; database=ClinicaTurnos; integrated security=true");
+            conexion = new SqlConnection("server=.\\SQLEXPRESS; database=ClinicaTurnos; integrated security=true");
             comando = new SqlCommand();
         }
 

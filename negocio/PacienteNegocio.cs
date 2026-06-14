@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using acceso_datos;
 
 namespace negocio
 {
@@ -18,6 +19,8 @@ namespace negocio
             try
             {
                 datos.setearConsulta("SELECT Id, Nombre, Apellido, DNI, FechaNacimiento, Sexo, Email, Telefono, Direccion, ObraSocial, NroAfiliado, Activo FROM Pacientes WHERE Activo = 1");
+               
+                //datos.setearConsulta("SELECT Id, Nombre, Apellido, DNI, FechaNacimiento, Sexo, Email, Telefono, Direccion, ObraSocial, NroAfiliado, Estado FROM Pacientes");
                 datos.ejecutarLectura();
 
                 while (datos.Lector.Read())
@@ -37,6 +40,8 @@ namespace negocio
                     aux.ObraSocial = datos.Lector["ObraSocial"] is DBNull ? "" : (string)datos.Lector["ObraSocial"];
                     aux.NroAfiliado = datos.Lector["NroAfiliado"] is DBNull ? "" : (string)datos.Lector["NroAfiliado"];
                     aux.Activo = (bool)datos.Lector["Activo"];
+                    // Si tu script usa "Estado", mapealo así:
+                    //aux.Activo = datos.Lector["Estado"] is DBNull ? true : Convert.ToBoolean(datos.Lector["Estado"]);
 
                     lista.Add(aux);
                 }
@@ -61,7 +66,8 @@ namespace negocio
             try
             {
                 datos.setearConsulta("INSERT INTO Pacientes (Nombre, Apellido, DNI, FechaNacimiento, Sexo, Email, Telefono, Direccion, ObraSocial, NroAfiliado) " +
-                    "VALUES (@nombre, @apellido, @dni, @fechaNac, @sexo, @email, @telefono, @direccion, @obraSocial, @nroAfiliado)");
+                 "VALUES (@nombre, @apellido, @dni, @fechaNac, @sexo, @email, @telefono, @direccion, @obraSocial, @nroAfiliado)");
+               
 
                 datos.setearParametro("@nombre", nuevo.Nombre);
                 datos.setearParametro("@apellido", nuevo.Apellido);

@@ -26,7 +26,8 @@ namespace SistemaClinica
                 catch (Exception ex)
                 {
                     // Si falla (porque todavía no reconfiguramos la BD local), atrapamos el error para que no explote
-                    Session.Add("Error", ex.ToString());
+                    //Session.Add("Error", ex.ToString());
+                    throw ex;
                 }
             }
         }
