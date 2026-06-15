@@ -24,7 +24,9 @@
                             
                             <asp:TemplateField HeaderText="Acciones">
                                 <ItemTemplate>
-                                    <asp:Button ID="btnModificar" runat="server" Text="Editar" CssClass="btn btn-sm btn-outline-primary py-0 px-2" />
+                                    <asp:Button ID="btnModificar" runat="server" Text="Editar" CssClass="btn btn-sm btn-outline-primary btn-sm"
+                                    CommandName="EditarPaciente"
+                                    CommandArgument='<%# Eval("Id") %>' OnClick="btnEditar_Click" />
                                 </ItemTemplate>
                             </asp:TemplateField>
                         </Columns>
@@ -35,7 +37,12 @@
         </div>
     </div>
 
-    <div class="row">
+    <asp:Panel ID="pnlAlertaExito" runat="server" CssClass="alert alert-success alert-dismissible fade show shadow-sm mt-3" Visible="false" role="alert">
+    <strong><i class="fa-solid fa-circle-check me-2"></i>¡Éxito!</strong> El paciente fue modificado correctamente.
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </asp:Panel>
+
+    <div id="seccionFormulario" class="row">
         <div class="col-12">
             <div class="tarjeta-clinica shadow-sm">
                 <h3 class="headline-sm mb-4 text-secondary"><i class="fa-solid fa-user-plus me-2"></i>Registrar / Modificar Paciente</h3>
@@ -92,7 +99,9 @@
                     <div class="col-12 text-end mt-4">
                         <hr class="mb-4" style="border-top: 1px solid var(--cp-borde-suave);" />
                         <asp:Button ID="btnCancelar" runat="server" Text="Cancelar Operación" CssClass="btn btn-clinica-secundario me-2 px-4" />
-                        <asp:Button ID="btnGuardar" runat="server" Text="Guardar Paciente" CssClass="btn btn-clinica-primario px-4" />
+                        <asp:Button ID="btnGuardar" runat="server" Text="Guardar Paciente" CssClass="btn btn-success" OnClick="btnGuardar_Click" />
+                        
+                        
                     </div>
                 </div>
 
