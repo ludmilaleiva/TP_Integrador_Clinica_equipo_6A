@@ -196,7 +196,7 @@
                             <a class="nav-link" href="Default.aspx"><i class="fa-solid fa-chart-pie me-1"></i> Panel Inicio</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="TurnosPacientes.aspx"><i class="fa-solid fa-calendar-plus me-1"></i> Asignar Turno</a>
+                            <a class="nav-link" href="AsignarTurno.aspx"><i class="fa-solid fa-calendar-plus me-1"></i> Asignar Turno</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="ListadoTurnos.aspx"><i class="fa-solid fa-table-list me-1"></i> Control de Turnos</a>

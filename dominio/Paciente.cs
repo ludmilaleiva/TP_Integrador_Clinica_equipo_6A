@@ -21,5 +21,18 @@ namespace dominio
         public string NroAfiliado { get; set; }
         public bool Activo { get; set; }
         public DateTime FechaAlta { get; set; }
+            
+    
+
+        public string DatosCompletosCombo
+        {
+            get
+            {
+                // Esto va a armar la cadena: "Pérez, Juan Carlos (DNI: 35123456)"
+                return $"{Apellido}, {Nombre} (DNI: {DNI})";
+            }
+        }
     }
+
+
 }
