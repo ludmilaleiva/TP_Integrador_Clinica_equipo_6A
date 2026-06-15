@@ -27,6 +27,10 @@
                                     <asp:Button ID="btnModificar" runat="server" Text="Editar" CssClass="btn btn-sm btn-outline-primary btn-sm"
                                     CommandName="EditarPaciente"
                                     CommandArgument='<%# Eval("Id") %>' OnClick="btnEditar_Click" />
+
+                                    <asp:Button ID="btnEliminar" runat="server" Text="Eliminar" CssClass="btn btn-sm btn-outline-danger"
+                    CommandName="EliminarPaciente" CommandArgument='<%# Eval("Id") %>' OnClick="btnEliminar_Click" 
+                    OnClientClick="return confirm('¿Estás seguro de que deseas eliminar este paciente?');" />
                                 </ItemTemplate>
                             </asp:TemplateField>
                         </Columns>
@@ -42,11 +46,18 @@
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </asp:Panel>
 
+    <asp:Panel ID="pnlAlertaError" runat="server" CssClass="alert alert-danger alert-dismissible fade show shadow-sm mt-3" Visible="false" role="alert">
+    <strong><i class="fa-solid fa-triangle-exclamation me-2"></i>¡Atención!</strong> <asp:Label ID="lblMensajeError" runat="server" Text=""></asp:Label>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </asp:Panel>
+
     <div id="seccionFormulario" class="row">
         <div class="col-12">
             <div class="tarjeta-clinica shadow-sm">
                 <h3 class="headline-sm mb-4 text-secondary"><i class="fa-solid fa-user-plus me-2"></i>Registrar / Modificar Paciente</h3>
-                
+               
+                <asp:HiddenField ID="hfIdPaciente" runat="server" Value="" />
+
                 <div class="row g-3">
                     <div class="col-md-4">
                         <label class="form-label fw-bold text-secondary">Nombre *</label>
@@ -98,7 +109,7 @@
 
                     <div class="col-12 text-end mt-4">
                         <hr class="mb-4" style="border-top: 1px solid var(--cp-borde-suave);" />
-                        <asp:Button ID="btnCancelar" runat="server" Text="Cancelar Operación" CssClass="btn btn-clinica-secundario me-2 px-4" />
+                        <asp:Button ID="btnCancelar" runat="server" Text="Cancelar Operación" CssClass="btn btn-clinica-secundario me-2 px-4" OnClick="btnCancelar_Click" />
                         <asp:Button ID="btnGuardar" runat="server" Text="Guardar Paciente" CssClass="btn btn-success" OnClick="btnGuardar_Click" />
                         
                         

@@ -39,6 +39,20 @@ namespace SistemaClinica
         {
             try
             {
+
+                pnlAlertaExito.Visible = false;
+                pnlAlertaError.Visible = false;
+                
+                if (string.IsNullOrWhiteSpace(txtNombre.Text) ||
+                string.IsNullOrWhiteSpace(txtApellido.Text) ||
+                string.IsNullOrWhiteSpace(txtDNI.Text) ||
+                string.IsNullOrWhiteSpace(txtFechaNacimiento.Text))
+                {
+                    lblMensajeError.Text = "Por favor, completa todos los campos obligatorios marcados con asterisco (*).";
+                    pnlAlertaError.Visible = true;
+                    return;
+                }
+
                 Paciente nuevo = new Paciente();
                 PacienteNegocio negocio = new PacienteNegocio();
 
@@ -77,11 +91,14 @@ namespace SistemaClinica
                 cargarGrilla();
                 limpiarFormulario();
                 btnGuardar.Text = "Guardar Paciente";
+                pnlAlertaExito.Visible = false;
             }
             catch (Exception ex)
             {
-                // Dejamos el throw temporal por si alguna caja de texto tira error de formato
-                throw ex;
+              
+                lblMensajeError.Text = "Ocurrió un error inesperado al procesar la operación: " + ex.Message;
+                pnlAlertaError.Visible = true; 
+
             }
         }
 
@@ -149,6 +166,50 @@ namespace SistemaClinica
                 throw ex;
             }
         }
-               
+
+
+        protected void btnEliminar_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Button btnEliminar = (Button)sender;
+                int idPaciente = Convert.ToInt32(btnEliminar.CommandArgument);
+
+                PacienteNegocio negocio = new PacienteNegocio();
+                negocio.eliminarLogico(idPaciente);
+
+                // Refrescamos la grilla para que desaparezca al instante
+                cargarGrilla();
+
+                // Si justo estábamos editando a ese paciente, cancelamos la operación actual
+                if (hfIdPaciente.Value == idPaciente.ToString())
+                {
+                    limpiarFormulario();
+                    hfIdPaciente.Value = "";
+                    btnGuardar.Text = "Guardar Paciente";
+                    pnlAlertaExito.Visible = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        protected void btnCancelar_Click(object sender, EventArgs e)
+        {
+            // Limpiamos las cajitas de texto
+            limpiarFormulario();
+
+            // Vaciamos el ID oculto para que la próxima acción sea un Alta común
+            hfIdPaciente.Value = "";
+
+            // Devolvemos el texto original al botón principal
+            btnGuardar.Text = "Guardar Paciente";
+
+            // Ocultamos las alertas por las dudas
+            pnlAlertaExito.Visible = false;
+            pnlAlertaError.Visible = false;
+        }
     }
 }

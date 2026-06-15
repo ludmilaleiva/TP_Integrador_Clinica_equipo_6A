@@ -160,5 +160,25 @@ namespace negocio
                 datos.cerrarConexion();
             }
         }
+
+        public void eliminarLogico(int id)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                // Pasamos Activo a 0 (Falso) en lugar de hacer un DELETE físico
+                datos.setearConsulta("UPDATE Pacientes SET Activo = 0 WHERE Id = @id");
+                datos.setearParametro("@id", id);
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
     }
 }
