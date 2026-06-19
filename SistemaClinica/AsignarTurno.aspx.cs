@@ -87,6 +87,7 @@ namespace SistemaClinica
 
                     // TODO: Acá más adelante vamos a hacer que la tarjeta derecha de "Sugerencias"
                     // parpadee y cargue los 3 horarios sugeridos automáticamente.
+
                 }
                 catch (Exception ex)
                 {
@@ -99,6 +100,63 @@ namespace SistemaClinica
                 ddlMedico.Items.Clear();
                 ddlMedico.Items.Insert(0, new ListItem("Seleccione primero la especialidad...", ""));
             }
+        }
+
+        protected void txtFechaTurno_TextChanged(object sender, EventArgs e)
+        {
+            // 1. Validamos que tengamos un médico seleccionado y una fecha válida
+            if (!string.IsNullOrEmpty(ddlMedico.SelectedValue) && !string.IsNullOrEmpty(txtFechaTurno.Text))
+            {
+                int idMedico = Convert.ToInt32(ddlMedico.SelectedValue);
+                DateTime fechaSeleccionada = Convert.ToDateTime(txtFechaTurno.Text);
+
+                // 🛑 Regla de negocio: No se pueden dar de alta turnos vencidos (anteriores a hoy)
+                if (fechaSeleccionada < DateTime.Today)
+                {
+                    // Podríamos limpiar el campo y avisar (luego armamos una alerta visual elegante)
+                    txtFechaTurno.Text = "";
+                    ddlHorario.Items.Clear();
+                    ddlHorario.Items.Insert(0, new ListItem("¡No elija fechas pasadas!", ""));
+                    return;
+                }
+
+                try
+                {
+                    // 2. Cargamos los rangos de 1 hora disponibles
+                    cargarHorariosDisponibles(idMedico, fechaSeleccionada);
+                }
+                catch (Exception ex)
+                {
+                    Session.Add("error", ex.ToString());
+                }
+            }
+            else
+            {
+                ddlHorario.Items.Clear();
+                ddlHorario.Items.Insert(0, new ListItem("Seleccione médico y fecha...", ""));
+            }
+        }
+
+        private void cargarHorariosDisponibles(int idMedico, DateTime fecha)
+        {
+            ddlHorario.Items.Clear();
+
+            // 🕒 Simulamos una agenda: supongamos que el médico trabaja de 8:00 a 14:00 hs
+            // En la siguiente fase, estos límites saldrán de la tabla 'Turnos_Trabajo' de tu SQL
+            int horaEntrada = 8;
+            int horaSalida = 14;
+
+            for (int hora = horaEntrada; hora < horaSalida; hora++)
+            {
+                // Formateamos la cadena estética que pide la consigna: "de 10 a 11", "de 11 a 12"
+                string textoHorario = $"de {hora}:00 a {hora + 1}:00 hs";
+                string valorHorario = hora.ToString(); // Guardamos solo el número de hora de inicio (ej: "10")
+
+                ddlHorario.Items.Add(new ListItem(textoHorario, valorHorario));
+            }
+
+            // Insertamos el ítem neutro al principio
+            ddlHorario.Items.Insert(0, new ListItem("Seleccione un horario...", ""));
         }
     }
 }

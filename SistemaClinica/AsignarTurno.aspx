@@ -54,7 +54,7 @@
 
                     <div class="col-md-3">
                         <label class="form-label fw-bold text-secondary">Fecha del Turno *</label>
-                        <asp:TextBox ID="txtFechaTurno" runat="server" CssClass="form-control form-control-clinica" TextMode="Date"></asp:TextBox>
+                        <asp:TextBox ID="txtFechaTurno" runat="server" CssClass="form-control form-control-clinica" TextMode="Date" AutoPostBack="true" OnTextChanged="txtFechaTurno_TextChanged"></asp:TextBox>
                     </div>
 
                     <div class="col-md-3">
