@@ -104,16 +104,15 @@ namespace SistemaClinica
 
         protected void txtFechaTurno_TextChanged(object sender, EventArgs e)
         {
-            // 1. Validamos que tengamos un médico seleccionado y una fecha válida
+            // Validamos que tengamos un médico seleccionado y una fecha válida antes de consultar
             if (!string.IsNullOrEmpty(ddlMedico.SelectedValue) && !string.IsNullOrEmpty(txtFechaTurno.Text))
             {
                 int idMedico = Convert.ToInt32(ddlMedico.SelectedValue);
                 DateTime fechaSeleccionada = Convert.ToDateTime(txtFechaTurno.Text);
 
-                //No se pueden dar de alta turnos vencidos (anteriores a hoy)
+                //Regla de negocio: Impedir la selección de fechas pasadas
                 if (fechaSeleccionada < DateTime.Today)
                 {
-                    // Podríamos limpiar el campo y avisar (luego armamos una alerta visual elegante)
                     txtFechaTurno.Text = "";
                     ddlHorario.Items.Clear();
                     ddlHorario.Items.Insert(0, new ListItem("¡No elija fechas pasadas!", ""));
@@ -122,12 +121,13 @@ namespace SistemaClinica
 
                 try
                 {
-                    // Cargamos los rangos de 1 hora disponibles
+                    //Invocamos la carga real desde el Stored Procedure de SQL
                     cargarHorariosDisponibles(idMedico, fechaSeleccionada);
                 }
                 catch (Exception ex)
                 {
                     Session.Add("error", ex.ToString());
+                    // Si tenés una pantalla de error general (ej: Error.aspx), podés redirigir acá
                 }
             }
             else
@@ -140,23 +140,52 @@ namespace SistemaClinica
         private void cargarHorariosDisponibles(int idMedico, DateTime fecha)
         {
             ddlHorario.Items.Clear();
+            // Instanciamos la clase de acceso a datos (ajustá el namespace si es 'acceso_datos' o 'negocio')
+            acceso_datos.AccesoDatos datos = new acceso_datos.AccesoDatos();
 
-            // Simulamos una agenda: supongamos que el médico trabaja de 8:00 a 14:00 hs
-            // En la siguiente fase, estos límites saldrán de la tabla 'Turnos_Trabajo' de tu SQL
-            int horaEntrada = 8;
-            int horaSalida = 14;
-
-            for (int hora = horaEntrada; hora < horaSalida; hora++)
+            try
             {
-                // Formateamos la cadena estética que pide la consigna: "de 10 a 11", "de 11 a 12"
-                string textoHorario = $"de {hora}:00 a {hora + 1}:00 hs";
-                string valorHorario = hora.ToString(); // Guardamos solo el número de hora de inicio (ej: "10")
+                // Consumimos el SP del script que evalúa el turno de trabajo y la ocupación real
+                datos.setearProcedimiento("SP_ObtenerHorariosDisponibles");
+                datos.setearParametro("@MedicoId", idMedico);
+                datos.setearParametro("@Fecha", fecha);
+                datos.ejecutarLectura();
 
-                ddlHorario.Items.Add(new ListItem(textoHorario, valorHorario));
+                while (datos.Lector.Read())
+                {
+                    // En SQL los campos de tipo TIME se leen en C# como objetos 'TimeSpan'
+                    TimeSpan horaInicio = (TimeSpan)datos.Lector["HoraInicio"];
+                    TimeSpan horaFin = (TimeSpan)datos.Lector["HoraFin"];
+                    int disponible = Convert.ToInt32(datos.Lector["Disponible"]);
+
+                    // Formateamos estéticamente el texto que ve el usuario (ej: "de 08:00 a 09:00 hs")
+                    string textoHorario = $"de {horaInicio.ToString(@"hh\:mm")} a {horaFin.ToString(@"hh\:mm")} hs";
+
+                    // Guardamos el valor de inicio completo como string en el Value (ej: "08:00:00")
+                    string valorHorario = horaInicio.ToString();
+
+                    ListItem item = new ListItem(textoHorario, valorHorario);
+
+                    // Regla de tu SP: si el slot está ocupado (Disponible = 0), lo deshabilitamos en la interfaz
+                    if (disponible == 0)
+                    {
+                        item.Text += " [OCUPADO]";
+                        item.Attributes.Add("disabled", "disabled"); // Bootstrap e HTML impiden que el usuario lo clickee
+                    }
+
+                    ddlHorario.Items.Add(item);
+                }
+
+                ddlHorario.Items.Insert(0, new ListItem("Seleccione un horario...", ""));
             }
-
-            // Insertamos el ítem neutro al principio
-            ddlHorario.Items.Insert(0, new ListItem("Seleccione un horario...", ""));
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
         }
     }
 }
