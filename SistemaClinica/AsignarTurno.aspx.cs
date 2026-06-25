@@ -110,7 +110,7 @@ namespace SistemaClinica
                 int idMedico = Convert.ToInt32(ddlMedico.SelectedValue);
                 DateTime fechaSeleccionada = Convert.ToDateTime(txtFechaTurno.Text);
 
-                // 🛑 Regla de negocio: No se pueden dar de alta turnos vencidos (anteriores a hoy)
+                //No se pueden dar de alta turnos vencidos (anteriores a hoy)
                 if (fechaSeleccionada < DateTime.Today)
                 {
                     // Podríamos limpiar el campo y avisar (luego armamos una alerta visual elegante)
@@ -122,7 +122,7 @@ namespace SistemaClinica
 
                 try
                 {
-                    // 2. Cargamos los rangos de 1 hora disponibles
+                    // Cargamos los rangos de 1 hora disponibles
                     cargarHorariosDisponibles(idMedico, fechaSeleccionada);
                 }
                 catch (Exception ex)
@@ -141,7 +141,7 @@ namespace SistemaClinica
         {
             ddlHorario.Items.Clear();
 
-            // 🕒 Simulamos una agenda: supongamos que el médico trabaja de 8:00 a 14:00 hs
+            // Simulamos una agenda: supongamos que el médico trabaja de 8:00 a 14:00 hs
             // En la siguiente fase, estos límites saldrán de la tabla 'Turnos_Trabajo' de tu SQL
             int horaEntrada = 8;
             int horaSalida = 14;

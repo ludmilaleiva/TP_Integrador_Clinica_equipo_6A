@@ -10,7 +10,7 @@ namespace negocio
 {
     public class MedicoNegocio
     {
-        // Método para listar médicos filtrados por Especialidad (Relación N:N)
+        // listar médicos filtrados por Especialidad
         public List<Medico> listarPorEspecialidad(int idEspecialidad)
         {
             List<Medico> lista = new List<Medico>();
@@ -18,13 +18,14 @@ namespace negocio
 
             try
             {
-                // Hacemos JOINs para cruzar los Médicos con la tabla intermedia de Especialidades
-                datos.setearConsulta("SELECT m.Id, m.Nombre, m.Apellido, m.Matricula, m.Email " +
-                    "FROM Medicos m " +
-                    "INNER JOIN Medico_Especialidades me ON m.Id = me.MedicoId " +
-                    "WHERE me.EspecialidadId = @idEsp AND m.Activo = 1");
+            
+                datos.setearConsulta(@"
+                    SELECT m.Id, m.Nombre, m.Apellido, m.Matricula, m.Email 
+                    FROM Medicos m 
+                    INNER JOIN Medico_Especialidades me ON m.Id = me.MedicoId 
+                    WHERE me.EspecialidadId = @EspecialidadId AND m.Activo = 1");
 
-                datos.setearParametro("@idEsp", idEspecialidad);
+                datos.setearParametro("@EspecialidadId", idEspecialidad);
                 datos.ejecutarLectura();
 
                 while (datos.Lector.Read())

@@ -20,5 +20,10 @@ namespace dominio
         // Relación N:N de Medico_Especialidades: una lista con todas sus especialidades
         public List<Especialidad> Especialidades { get; set; }
         public bool Activo { get; set; }
+
+        public string NombreCompleto
+        {
+            get { return Apellido + ", " + Nombre; }
+        }
     }
 }
