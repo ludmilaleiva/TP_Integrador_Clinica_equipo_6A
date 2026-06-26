@@ -12,7 +12,7 @@
                     <hr class="my-4 mx-auto" style="max-width: 300px; border-top: 1px solid var(--cp-borde-suave);" />
                     
                     <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                        <a href="TurnosPacientes.aspx" class="btn btn-clinica-primario px-4 fs-6">
+                        <a href="AsignarTurno.aspx" class="btn btn-clinica-primario px-4 fs-6">
                             <i class="fa-solid fa-calendar-check me-2"></i>Asignar Nuevo Turno
                         </a>
                         <a href="ListadoTurnos.aspx" class="btn btn-clinica-secundario px-4 fs-6">

@@ -73,7 +73,7 @@
                     <div class="col-12 text-end mt-4">
                         <hr class="mb-4" style="border-top: 1px solid var(--cp-borde-suave);" />
                         <asp:Button ID="btnLimpiar" runat="server" Text="Limpiar Formulario" CssClass="btn btn-clinica-secundario me-2 px-4" />
-                        <asp:Button ID="btnConfirmarTurno" runat="server" Text="Confirmar y Reservar Turno" CssClass="btn btn-success px-4 fw-bold" />
+                        <asp:Button ID="btnConfirmarTurno" runat="server" Text="Confirmar y Reservar Turno" CssClass="btn btn-success px-4 fw-bold" OnClick="btnConfirmarTurno_Click"/>
                     </div>
 
                 </div>

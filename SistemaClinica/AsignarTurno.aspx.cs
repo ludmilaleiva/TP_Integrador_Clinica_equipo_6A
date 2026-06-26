@@ -4,7 +4,6 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-
 using negocio;
 using dominio;
 
@@ -186,6 +185,67 @@ namespace SistemaClinica
             {
                 datos.cerrarConexion();
             }
+        }
+
+        //Confirmamos el turno y lo guardamos en la base de datos
+        protected void btnConfirmarTurno_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(ddlPaciente.SelectedValue) ||
+                string.IsNullOrEmpty(ddlMedico.SelectedValue) ||
+                string.IsNullOrEmpty(ddlHorario.SelectedValue) ||
+                string.IsNullOrEmpty(txtFechaTurno.Text))
+            {
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "alertFaltanCampos", "alert('Por favor, complete todos los campos obligatorios.');", true);
+                return;
+            }
+
+            try
+            {
+                Turno nuevoTurno = new Turno();
+
+                // Inicializamos los objetos complejos asignando sus respectivos IDs
+                nuevoTurno.Paciente = new Paciente { Id = Convert.ToInt32(ddlPaciente.SelectedValue) };
+                nuevoTurno.Medico = new Medico { Id = Convert.ToInt32(ddlMedico.SelectedValue) };
+                nuevoTurno.Especialidad = new Especialidad { Id = Convert.ToInt32(ddlEspecialidad.SelectedValue) };
+
+                nuevoTurno.Fecha = Convert.ToDateTime(txtFechaTurno.Text);
+
+                TimeSpan horaInicio = TimeSpan.Parse(ddlHorario.SelectedValue);
+                nuevoTurno.HoraInicio = horaInicio;
+                nuevoTurno.HoraFin = horaInicio.Add(new TimeSpan(1, 0, 0)); // Slot de 1 hora
+
+                // Mapeamos al cuadro de texto de observaciones de tu pantalla
+                nuevoTurno.ObservacionesPaciente = "Cita programada desde panel.";
+
+                TurnoNegocio negocio = new TurnoNegocio();
+                negocio.agregar(nuevoTurno);
+
+                string scriptExito = "alert('¡Turno confirmado y guardado con éxito!'); window.location='Default.aspx';";
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "alertRedirect", scriptExito, true);
+            }
+            catch (Exception ex)
+            {
+                Session.Add("error", ex.ToString());
+
+                string mensajeError = ex.Message.Replace("'", "\\'");
+                string scriptError = $"alert('Error crítico al guardar: {mensajeError}');";
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "errorAlert", scriptError, true);
+            }
+        }
+
+        // Limpia todo el formulario
+        protected void btnLimpiar_Click(object sender, EventArgs e)
+        {
+            ddlPaciente.SelectedIndex = 0;
+            ddlEspecialidad.SelectedIndex = 0;
+
+            ddlMedico.Items.Clear();
+            ddlMedico.Items.Insert(0, new ListItem("Seleccione primero la especialidad...", ""));
+
+            ddlHorario.Items.Clear();
+            ddlHorario.Items.Insert(0, new ListItem("Seleccione médico y fecha...", ""));
+
+            txtFechaTurno.Text = "";
         }
     }
 }
