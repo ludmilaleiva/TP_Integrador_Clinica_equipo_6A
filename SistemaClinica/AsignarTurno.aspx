@@ -1,5 +1,8 @@
 ﻿<%@ Page Title="Asignar Turno" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="AsignarTurno.aspx.cs" Inherits="SistemaClinica.AsignarTurno" %>
+
 <asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
     
     <div class="row mb-4">
         <div class="col-12">
@@ -23,11 +26,8 @@
                     
                     <div class="col-md-6">
                         <label class="form-label fw-bold text-secondary">Paciente *</label>
-                        <asp:DropDownList ID="ddlPaciente" runat="server" CssClass="form-select form-control-clinica">
+                        <asp:DropDownList ID="ddlPaciente" runat="server" CssClass="form-select form-control-clinica buscador-dinamico">
                             <asp:ListItem Text="Seleccione un paciente..." Value="" />
-                            <%-- Se cargará desde la Base de Datos --%>
-                            <asp:ListItem Text="Pérez, Juan Carlos (DNI: 35123456)" Value="1" />
-                            <asp:ListItem Text="Gómez, María Belén (DNI: 38765432)" Value="2" />
                         </asp:DropDownList>
                     </div>
 
@@ -36,7 +36,6 @@
                         <asp:DropDownList ID="ddlEspecialidad" runat="server" CssClass="form-select form-control-clinica" 
                             AutoEventWireup="true" AutoPostBack="true" OnSelectedIndexChanged="ddlEspecialidad_SelectedIndexChanged">
                             <asp:ListItem Text="Seleccione una especialidad..." Value="" />
-                           
                         </asp:DropDownList>
                     </div>
 
@@ -48,7 +47,6 @@
                         <label class="form-label fw-bold text-secondary">Médico Especialista *</label>
                         <asp:DropDownList ID="ddlMedico" runat="server" CssClass="form-select form-control-clinica">
                             <asp:ListItem Text="Seleccione primero la especialidad..." Value="" />
-                            <%-- Se filtrará dinámicamente según especialidad --%>
                         </asp:DropDownList>
                     </div>
 
@@ -61,7 +59,6 @@
                         <label class="form-label fw-bold text-secondary">Horarios Disponibles *</label>
                         <asp:DropDownList ID="ddlHorario" runat="server" CssClass="form-select form-control-clinica">
                             <asp:ListItem Text="Seleccione día..." Value="" />
-                            <%-- Se cargarán los bloques de 1 hora libre del médico (ej: 10:00 a 11:00) --%>
                         </asp:DropDownList>
                     </div>
 
@@ -83,14 +80,11 @@
         <div class="col-lg-4">
             <div class="card border-primary shadow-sm" style="border-radius: 12px; overflow: hidden;">
                 <div class="card-header bg-primary text-white py-3">
-                    <h5 class="card-title mb-0 fw-bold"><!--i class="fa-solid fa-wand-magic-sparkles me-2"--></!--i>Horarios Sugeridos</h5>
+                    <h5 class="card-title mb-0 fw-bold">Horarios Sugeridos</h5>
                     <small class="text-white-50">Opciones rápidas basadas en la especialidad</small>
                 </div>
                 <div class="card-body bg-light">
-                    <!--p class="text-muted small">Al elegir una especialidad, el sistema sugerirá las 3 opciones libres más próximas para ahorrar tiempo de carga.</!-->
-
                     <div class="d-grid gap-3">
-
                         <div class="p-3 border rounded bg-white shadow-xs position-relative hover-tarjeta" style="cursor: pointer; border-left: 4px solid var(--bs-success) !important;">
                             <span class="badge bg-success position-absolute top-0 end-0 m-2">Más próximo</span>
                             <h6 class="fw-bold mb-1 text-primary">Dr. Claudio Rossi</h6>
@@ -109,7 +103,6 @@
                             <p class="mb-0 small text-dark"><i class="fa-regular fa-calendar me-1"></i>Miércoles, 17 de Junio</p>
                             <p class="mb-0 small text-muted"><i class="fa-regular fa-clock me-1"></i>11:00 a 12:00 hs</p>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -126,4 +119,32 @@
         }
     </style>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script type="text/javascript">
+        function initSelect2() {
+            $('.buscador-dinamico').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Escriba nombre, apellido o DNI para buscar...',
+                allowClear: true,
+                language: {
+                    noResults: function () { return "No se encontró ningún paciente"; }
+                }
+            });
+        }
+
+        // Carga inicial
+        $(document).ready(function () {
+            initSelect2();
+        });
+
+        // Carga post PostBacks de AJAX / Cambios de combos
+        var prm = Sys.WebForms.PageRequestManager.getInstance();
+        if (prm != null) {
+            prm.add_endRequest(function (sender, e) {
+                initSelect2();
+            });
+        }
+    </script>
 </asp:Content>
