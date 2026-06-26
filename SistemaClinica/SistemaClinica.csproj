@@ -68,6 +68,7 @@
     <Content Include="AsignarTurno.aspx" />
     <Content Include="Default.aspx" />
     <Content Include="Global.asax" />
+    <Content Include="ListadoTurnos.aspx" />
     <Content Include="Pacientes.aspx" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -88,6 +89,13 @@
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="ListadoTurnos.aspx.cs">
+      <DependentUpon>ListadoTurnos.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ListadoTurnos.aspx.designer.cs">
+      <DependentUpon>ListadoTurnos.aspx</DependentUpon>
     </Compile>
     <Compile Include="Pacientes.aspx.cs">
       <DependentUpon>Pacientes.aspx</DependentUpon>

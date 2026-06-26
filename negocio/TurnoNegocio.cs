@@ -65,5 +65,78 @@ namespace negocio
                 throw ex;
             }
         }
+
+        public List<Turno> listar()
+        {
+            List<Turno> lista = new List<Turno>();
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                // Trae los datos clave uniendo las tablas para armar los objetos complejos
+                datos.setearConsulta(@"
+            SELECT T.Id, T.Numero, T.Fecha, T.HoraInicio, T.HoraFin, T.ObservacionesPaciente,
+                   P.Id AS PacienteId, P.Nombre AS PacienteNombre, P.Apellido AS PacienteApellido,
+                   M.Id AS MedicoId, M.Nombre AS MedicoNombre, M.Apellido AS MedicoApellido,
+                   E.Id AS EspecialidadId, E.Nombre AS EspecialidadNombre,
+                   T.EstadoId
+            FROM Turnos T
+            INNER JOIN Pacientes P ON T.PacienteId = P.Id
+            INNER JOIN Medicos M ON T.MedicoId = M.Id
+            INNER JOIN Especialidades E ON T.EspecialidadId = E.Id
+            INNER JOIN EstadosTurno Est ON T.EstadoId = Est.Id
+            WHERE T.EstadoId <> 3 -- Opcional: No mostrar los anulados/cancelados si prefieren sacarlos de la grilla principal
+            ORDER BY T.Fecha DESC, T.HoraInicio DESC");
+
+                datos.ejecutarLectura();
+
+                while (datos.Lector.Read())
+                {
+                    Turno aux = new Turno();
+                    aux.Id = Convert.ToInt32(datos.Lector["Id"]);
+                    aux.Numero = datos.Lector["Numero"].ToString();
+                    aux.Fecha = Convert.ToDateTime(datos.Lector["Fecha"]);
+                    aux.HoraInicio = (TimeSpan)datos.Lector["HoraInicio"];
+                    aux.HoraFin = (TimeSpan)datos.Lector["HoraFin"];
+                    aux.ObservacionesPaciente = datos.Lector["ObservacionesPaciente"] != DBNull.Value ? datos.Lector["ObservacionesPaciente"].ToString() : "";
+
+                    // Instancia y mapeo de los objetos compuestos en dominio
+                    aux.Paciente = new Paciente
+                    {
+                        Id = Convert.ToInt32(datos.Lector["PacienteId"]),
+                        Nombre = datos.Lector["PacienteNombre"].ToString(),
+                        Apellido = datos.Lector["PacienteApellido"].ToString()
+                    };
+
+                    aux.Medico = new Medico
+                    {
+                        Id = Convert.ToInt32(datos.Lector["MedicoId"]),
+                        Nombre = datos.Lector["MedicoNombre"].ToString(),
+                        Apellido = datos.Lector["MedicoApellido"].ToString()
+                    };
+
+                    aux.Especialidad = new Especialidad
+                    {
+                        Id = Convert.ToInt32(datos.Lector["EspecialidadId"]),
+                        Nombre = datos.Lector["EspecialidadNombre"].ToString()
+                    };
+
+                    aux.Estado = new EstadoTurno();
+                    aux.Estado.Id = Convert.ToInt32(datos.Lector["EstadoId"]);
+
+                    lista.Add(aux);
+                }
+
+                return lista;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
     }
 }
