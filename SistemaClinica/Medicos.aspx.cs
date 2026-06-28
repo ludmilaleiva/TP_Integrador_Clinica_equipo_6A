@@ -85,7 +85,14 @@ namespace SistemaClinica
                     txtNombre.Text = seleccionado.Nombre;
                     txtApellido.Text = seleccionado.Apellido;
                     txtMatricula.Text = seleccionado.Matricula;
-                    if (ddlEspecialidad.Items.Count > 0) ddlEspecialidad.SelectedIndex = 0;
+                    if (seleccionado.Especialidades != null && seleccionado.Especialidades.Count > 0)
+                    {
+                        ddlEspecialidad.SelectedValue = seleccionado.Especialidades[0].Id.ToString();
+                    }
+                    else
+                    {
+                        if (ddlEspecialidad.Items.Count > 0) ddlEspecialidad.SelectedIndex = 0;
+                    }
 
                     litTituloForm.Text = "Editar Datos Médico N° " + idSeleccionado;
                 }

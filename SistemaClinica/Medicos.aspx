@@ -58,6 +58,13 @@
                                 <asp:BoundField HeaderText="Nombre" DataField="Nombre" />
                                 <asp:BoundField HeaderText="Matrícula" DataField="Matricula" />
                                 <asp:BoundField HeaderText="Email" DataField="Email" />
+                                <asp:TemplateField HeaderText="Especialidad">
+                                <ItemTemplate>
+                                <span class="badge bg-info text-dark">
+                                <%# ((List<dominio.Especialidad>)Eval("Especialidades")).Count > 0 ? ((List<dominio.Especialidad>)Eval("Especialidades"))[0].Nombre : "Sin Asignar" %>
+                                 </span>
+                                    </ItemTemplate>
+                                   </asp:TemplateField>
                                
                                 
                                 <asp:TemplateField HeaderText="Acciones" ItemStyle-CssClass="text-end pe-3">

@@ -7,7 +7,7 @@ namespace negocio
 {
     public class MedicoNegocio
     {
-        // 1. LISTAR TODOS LOS MÉDICOS ACTIVOS 
+        // LISTAR TODOS LOS MÉDICOS ACTIVOS
         public List<Medico> listar()
         {
             List<Medico> lista = new List<Medico>();
@@ -15,9 +15,16 @@ namespace negocio
 
             try
             {
-                // Traemos los médicos activos. 
               
-                datos.setearConsulta("SELECT Id, Nombre, Apellido, Matricula, Email FROM Medicos WHERE Activo = 1 ORDER BY Apellido ASC");
+                datos.setearConsulta(@"
+                    SELECT m.Id, m.Nombre, m.Apellido, m.Matricula, m.Email,
+                           e.Id AS EspecialidadId, e.Nombre AS EspecialidadNombre
+                    FROM Medicos m
+                    LEFT JOIN Medico_Especialidades me ON m.Id = me.MedicoId
+                    LEFT JOIN Especialidades e ON me.EspecialidadId = e.Id
+                    WHERE m.Activo = 1 
+                    ORDER BY m.Apellido ASC");
+
                 datos.ejecutarLectura();
 
                 while (datos.Lector.Read())
@@ -28,7 +35,12 @@ namespace negocio
                     aux.Apellido = (string)datos.Lector["Apellido"];
                     aux.Matricula = (string)datos.Lector["Matricula"];
                     aux.Email = datos.Lector["Email"] != DBNull.Value ? (string)datos.Lector["Email"] : "";
+                    aux.Especialidades = new List<Especialidad>(); 
 
+                    Especialidad esp = new Especialidad();
+                    esp.Id = datos.Lector["EspecialidadId"] != DBNull.Value ? Convert.ToInt32(datos.Lector["EspecialidadId"]) : 0;
+                    esp.Nombre = datos.Lector["EspecialidadNombre"] != DBNull.Value ? datos.Lector["EspecialidadNombre"].ToString() : "Sin Asignar";
+                    aux.Especialidades.Add(esp);
                     lista.Add(aux);
                 }
                 return lista;
@@ -37,7 +49,7 @@ namespace negocio
             finally { datos.cerrarConexion(); }
         }
 
-        // LISTAR POR ESPECIALIDAD 
+        // LISTAR POR ESPECIALIDAD (Útil para filtrar médicos al asignar un turno)
         public List<Medico> listarPorEspecialidad(int idEspecialidad)
         {
             List<Medico> lista = new List<Medico>();
@@ -61,6 +73,14 @@ namespace negocio
                     aux.Apellido = (string)datos.Lector["Apellido"];
                     aux.Matricula = (string)datos.Lector["Matricula"];
                     aux.Email = datos.Lector["Email"] != DBNull.Value ? (string)datos.Lector["Email"] : "";
+                    aux.Especialidades = new List<Especialidad>();
+
+                    Especialidad esp = new Especialidad();
+                    esp.Id = datos.Lector["EspecialidadId"] != DBNull.Value ? Convert.ToInt32(datos.Lector["EspecialidadId"]) : 0;
+                    esp.Nombre = datos.Lector["EspecialidadNombre"] != DBNull.Value ? datos.Lector["EspecialidadNombre"].ToString() : "Sin Asignar";
+
+                    //guardamos adentro de lista de Especialidades
+                    aux.Especialidades.Add(esp);
 
                     lista.Add(aux);
                 }
@@ -70,13 +90,12 @@ namespace negocio
             finally { datos.cerrarConexion(); }
         }
 
-        // 3. AGREGAR MÉDICO Y SU ESPECIALIDAD
+        //  AGREGAR MÉDICO Y SU ESPECIALIDAD 
         public void agregar(Medico nuevo, int idEspecialidad)
         {
             AccesoDatos datos = new AccesoDatos();
             try
             {
-                // Insertamos en Medicos y usamos SCOPE_IDENTITY() para capturar el ID generado
                 datos.setearConsulta(@"
                     INSERT INTO Medicos (Nombre, Apellido, Matricula, Email, Activo) 
                     VALUES (@nombre, @apellido, @matricula, @email, 1);
@@ -87,9 +106,8 @@ namespace negocio
                 datos.setearParametro("@matricula", nuevo.Matricula);
                 datos.setearParametro("@email", nuevo.Email);
 
-                // Ejecutamos la lectura para capturar ese ID
                 int idMedicoInsertado = datos.ejecutarAccionScalar();
-                datos.cerrarConexion(); // Cerramos para limpiar el comando anterior
+                datos.cerrarConexion();
 
                 // relación en la tabla intermedia Medico_Especialidades
                 datos = new AccesoDatos();
