@@ -93,8 +93,10 @@ namespace SistemaClinica
 
                 try
                 {
-                    // TODO: Acá más adelante llamar a un método para cambiar el EstadoId a 3 (Cancelado)
-                    // negocio.cancelar(idTurno);
+
+                    // Instanciamos el negocio y ejecutamos la baja lógica
+                    TurnoNegocio negocio = new TurnoNegocio();
+                    negocio.cancelar(idTurno);
 
                     ScriptManager.RegisterStartupScript(this, this.GetType(), "alert", $"alert('Turno ID {idTurno} cancelado (Falta query UPDATE en BD)');", true);
 
@@ -105,6 +107,7 @@ namespace SistemaClinica
                 catch (Exception ex)
                 {
                     Session.Add("error", ex.ToString());
+                    Response.Redirect("Error.aspx", false);
                 }
             }
         }

@@ -88,6 +88,7 @@ namespace negocio
             WHERE T.EstadoId <> 3 -- Opcional: No mostrar los anulados/cancelados si prefieren sacarlos de la grilla principal
             ORDER BY T.Fecha DESC, T.HoraInicio DESC");
 
+                
                 datos.ejecutarLectura();
 
                 while (datos.Lector.Read())
@@ -128,6 +129,26 @@ namespace negocio
                 }
 
                 return lista;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+        public void cancelar(int id)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                // estado a 3 (Cancelado) para el turno correspondiente
+                datos.setearConsulta("UPDATE Turnos SET EstadoId = 3 WHERE Id = @id");
+                datos.setearParametro("@id", id);
+                datos.ejecutarAccion();
             }
             catch (Exception ex)
             {
