@@ -204,6 +204,9 @@
                         <li class="nav-item">
                             <a class="nav-link" href="Pacientes.aspx"><i class="fa-solid fa-address-book me-1"></i> Registro Pacientes</a>
                         </li>
+                        <li class="nav-item">
+                         <a class="nav-link" href="Medicos.aspx"><i class="fa-solid fa-user-doctor me-1"></i>Gestión Médicos</a>
+                        </li>
                     </ul>
                     
                 </div>
