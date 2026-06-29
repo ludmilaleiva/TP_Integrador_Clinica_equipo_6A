@@ -1,6 +1,6 @@
 ﻿<%@ Page Title="Monitoreo de Turnos" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="ListadoTurnos.aspx.cs" Inherits="SistemaClinica.ListadoTurnos" %>
 
-<%-- 1. Este bloque maneja la cabecera (scripts/estilos). DEJA ESTO VACÍO por ahora --%>
+<%-- 1. Este bloque maneja la cabecera (scripts/estilos).ESTO VACÍO por ahora --%>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 </asp:Content>
 
@@ -31,8 +31,7 @@
 
     <div class="tarjeta-clinica shadow-sm">
         <div class="table-responsive">
-            <asp:GridView ID="dgvTurnos" runat="server" CssClass="table table-hover align-middle mb-0" 
-                AutoGenerateColumns="false" DataKeyNames="Id" OnRowCommand="dgvTurnos_RowCommand" GridLines="None">
+            <asp:GridView ID="dgvTurnos" runat="server" DataKeyNames="Id" AutoGenerateColumns="false" OnRowCommand="dgvTurnos_RowCommand" GridLines="None" CssClass="table table-hover align-middle mb-0">
                 <Columns>
                     <asp:BoundField HeaderText="Código" DataField="Numero" ItemStyle-CssClass="fw-bold text-primary" />
                     
@@ -62,13 +61,30 @@
                         </ItemTemplate>
                     </asp:TemplateField>
 
+                    <%-- Columna de Estado con Badge Dinámico --%>
+                    <asp:TemplateField HeaderText="Estado">
+                        <ItemTemplate>
+                            <%# Eval("Estado.Nombre").ToString() == "Cancelado" ? "<span class='badge bg-danger'>Cancelado</span>" :
+                                Eval("Estado.Nombre").ToString() == "Reprogramado" ? "<span class='badge bg-warning text-dark'>Reprogramado</span>" :
+                                "<span class='badge bg-success'>Nuevo</span>" %>
+                        </ItemTemplate>
+                    </asp:TemplateField>
+
                     <asp:TemplateField HeaderText="Acciones" ItemStyle-CssClass="text-end">
                         <ItemTemplate>
-                            <asp:LinkButton ID="btnCancelar" runat="server" CssClass="btn btn-outline-danger btn-sm" 
-                                CommandName="CancelarTurno" CommandArgument='<%# Eval("Id") %>'
-                                OnClientClick="return confirm('¿Está seguro de que desea cancelar este turno?');">
-                                <i class="fa-solid fa-ban me-1"></i> Cancelar
-                            </asp:LinkButton>
+                          <%-- Botón Cancelar (Se oculta/deshabilita si ya está Cancelado o Cerrado) --%>
+                        <asp:LinkButton ID="btnCancelar" runat="server" CommandName="Cancelar" 
+                            CommandArgument='<%# Eval("Id") %>' CssClass="btn btn-sm btn-outline-danger"
+                            Visible='<%# Eval("Estado.Nombre").ToString() != "Cancelado" && Eval("Estado.Nombre").ToString() != "Cerrado" %>'>
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </asp:LinkButton>
+
+                        <%-- Botón Reprogramar --%>
+                        <asp:LinkButton ID="btnReprogramar" runat="server" CommandName="Reprogramar" 
+                            CommandArgument='<%# Eval("Id") %>' CssClass="btn btn-sm btn-outline-warning"
+                            Visible='<%# Eval("Estado.Nombre").ToString() != "Cancelado" && Eval("Estado.Nombre").ToString() != "Cerrado" %>'>
+                            <i class="bi bi-calendar-event"></i> Reprogramar
+                        </asp:LinkButton>
                         </ItemTemplate>
                     </asp:TemplateField>
                 </Columns>

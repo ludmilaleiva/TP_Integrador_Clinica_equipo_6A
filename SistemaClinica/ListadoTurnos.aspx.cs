@@ -87,10 +87,11 @@ namespace SistemaClinica
         // Manejo de eventos de las filas (como el botón Cancelar)
         protected void dgvTurnos_RowCommand(object sender, GridViewCommandEventArgs e)
         {
+
+            int idTurno = Convert.ToInt32(e.CommandArgument);
+
             if (e.CommandName == "CancelarTurno")
             {
-                int idTurno = Convert.ToInt32(e.CommandArgument);
-
                 try
                 {
 
@@ -110,6 +111,12 @@ namespace SistemaClinica
                     Response.Redirect("Error.aspx", false);
                 }
             }
+            else if (e.CommandName == "Reprogramar")
+            {
+                // Redirige a la pantalla de Asignar pasando el ID del turno original por QueryString
+                Response.Redirect($"AsignarTurno.aspx?reprogramarId={idTurno}");
+            }
+
         }
     }
 }

@@ -191,9 +191,11 @@ namespace SistemaClinica
         //Confirmamos el turno y lo guardamos en la base de datos
         protected void btnConfirmarTurno_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(ddlPaciente.SelectedValue) ||
-                string.IsNullOrEmpty(ddlMedico.SelectedValue) ||
-                string.IsNullOrEmpty(ddlHorario.SelectedValue) ||
+            // Validamos que se hayan seleccionado opciones reales (con IDs mayores a 0)
+            if (string.IsNullOrEmpty(ddlPaciente.SelectedValue) || ddlPaciente.SelectedValue == "0" ||
+                string.IsNullOrEmpty(ddlMedico.SelectedValue) || ddlMedico.SelectedValue == "0" ||
+                string.IsNullOrEmpty(ddlEspecialidad.SelectedValue) || ddlEspecialidad.SelectedValue == "0" ||
+                string.IsNullOrEmpty(ddlHorario.SelectedValue) || ddlHorario.SelectedValue == "0" ||
                 string.IsNullOrEmpty(txtFechaTurno.Text))
             {
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "alertFaltanCampos", "alert('Por favor, complete todos los campos obligatorios.');", true);
@@ -208,20 +210,63 @@ namespace SistemaClinica
                 nuevoTurno.Paciente = new Paciente { Id = Convert.ToInt32(ddlPaciente.SelectedValue) };
                 nuevoTurno.Medico = new Medico { Id = Convert.ToInt32(ddlMedico.SelectedValue) };
                 nuevoTurno.Especialidad = new Especialidad { Id = Convert.ToInt32(ddlEspecialidad.SelectedValue) };
-
                 nuevoTurno.Fecha = Convert.ToDateTime(txtFechaTurno.Text);
 
                 TimeSpan horaInicio = TimeSpan.Parse(ddlHorario.SelectedValue);
                 nuevoTurno.HoraInicio = horaInicio;
                 nuevoTurno.HoraFin = horaInicio.Add(new TimeSpan(1, 0, 0)); // Slot de 1 hora
+                nuevoTurno.ObservacionesPaciente = txtObservaciones.Text;
 
-                // Mapeamos al cuadro de texto de observaciones de tu pantalla
-                nuevoTurno.ObservacionesPaciente = "Cita programada desde panel.";
+                //AUTOGENERACIÓN DEL NÚMERO DE TURNO ÚNICO
+                string añoActual = DateTime.Today.Year.ToString();
+                string codigoCorto = Guid.NewGuid().ToString().Substring(0, 5).ToUpper();
+                nuevoTurno.Numero = $"T{añoActual}-{codigoCorto}"; // Genera algo como: T2026-A5B2D
 
+                // MANEJO DE ESTADO Y REPROGRAMACIÓN DILIGENTE
+                if (Request.QueryString["reprogramarId"] != null)
+                {
+                    nuevoTurno.TurnoOriginalId = Convert.ToInt32(Request.QueryString["reprogramarId"]);
+                    nuevoTurno.Estado = new EstadoTurno { Id = 2 };// EstadoId = 2 ('Reprogramado')
+                }
+                else
+                {
+                    nuevoTurno.Estado = new EstadoTurno { Id = 1 }; // EstadoId = 1 ('Nuevo')
+                }
+
+                // Guardamos en la base de datos (con su correspondiente TurnoHistorial adentro)
                 TurnoNegocio negocio = new TurnoNegocio();
                 negocio.agregar(nuevoTurno);
 
-                string scriptExito = "alert('¡Turno confirmado y guardado con éxito!'); window.location='Default.aspx';";
+                //MÓDULO DE ENVÍO DE EMAIL AL PACIENTE
+                /*try
+                {
+                    PacienteNegocio pacNegocio = new PacienteNegocio();
+                    Paciente pac = pacNegocio.buscarPorId(nuevoTurno.Paciente.Id); // Necesitás este método en tu negocio para traer su Email
+
+                    if (pac != null && !string.IsNullOrEmpty(pac.Email))
+                    {
+                        //EmailService email = new EmailService(); // Ajustá al nombre exacto de tu clase de correo
+                        string asunto = $"Confirmación de Turno {nuevoTurno.Numero} - BioClinic";
+                        string cuerpo = $@"<h3>¡Hola {pac.Nombre}!</h3>
+                                   <p>Se ha reservado tu turno médico de manera exitosa.</p>
+                                   <ul>
+                                       <li><strong>Número de Turno:</strong> {nuevoTurno.Numero}</li>
+                                       <li><strong>Fecha:</strong> {nuevoTurno.Fecha:dd/MM/yyyy}</li>
+                                       <li><strong>Horario:</strong> de {nuevoTurno.HoraInicio.ToString(@"hh\:mm")} hs</li>
+                                   </ul>
+                                   <p>Gracias por confiar en BioClinic.</p>";
+
+                        //email.armarCorreo(pac.Email, asunto, cuerpo);
+                        //email.enviarCorreo();
+                    }
+                }
+                catch (Exception)
+                {
+               
+                }*/
+
+                // Redirigimos al listado general para ver el nuevo registro impactado
+                string scriptExito = "alert('¡Turno confirmado y guardado con éxito!'); window.location='ListadoTurnos.aspx';";
                 ScriptManager.RegisterStartupScript(this, this.GetType(), "alertRedirect", scriptExito, true);
             }
             catch (Exception ex)

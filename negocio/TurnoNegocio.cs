@@ -79,13 +79,13 @@ namespace negocio
                    P.Id AS PacienteId, P.Nombre AS PacienteNombre, P.Apellido AS PacienteApellido,
                    M.Id AS MedicoId, M.Nombre AS MedicoNombre, M.Apellido AS MedicoApellido,
                    E.Id AS EspecialidadId, E.Nombre AS EspecialidadNombre,
-                   T.EstadoId
+                   T.EstadoId, Est.Nombre AS EstadoNombre
             FROM Turnos T
             INNER JOIN Pacientes P ON T.PacienteId = P.Id
             INNER JOIN Medicos M ON T.MedicoId = M.Id
             INNER JOIN Especialidades E ON T.EspecialidadId = E.Id
             INNER JOIN EstadosTurno Est ON T.EstadoId = Est.Id
-            WHERE T.EstadoId <> 3 -- Opcional: No mostrar los anulados/cancelados si prefieren sacarlos de la grilla principal
+      
             ORDER BY T.Fecha DESC, T.HoraInicio DESC");
 
                 
@@ -122,8 +122,11 @@ namespace negocio
                         Nombre = datos.Lector["EspecialidadNombre"].ToString()
                     };
 
-                    aux.Estado = new EstadoTurno();
-                    aux.Estado.Id = Convert.ToInt32(datos.Lector["EstadoId"]);
+                    aux.Estado = new EstadoTurno
+                    {
+                        Id = Convert.ToInt32(datos.Lector["EstadoId"]),
+                        Nombre = datos.Lector["EstadoNombre"].ToString()
+                    };
 
                     lista.Add(aux);
                 }
@@ -140,14 +143,14 @@ namespace negocio
             }
         }
 
-        public void cancelar(int id)
+        public void cancelar(int idTurno)
         {
             AccesoDatos datos = new AccesoDatos();
             try
             {
                 // estado a 3 (Cancelado) para el turno correspondiente
                 datos.setearConsulta("UPDATE Turnos SET EstadoId = 3 WHERE Id = @id");
-                datos.setearParametro("@id", id);
+                datos.setearParametro("@id", idTurno);
                 datos.ejecutarAccion();
             }
             catch (Exception ex)
