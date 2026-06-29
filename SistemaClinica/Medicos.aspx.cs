@@ -25,6 +25,11 @@ namespace SistemaClinica
             ddlEspecialidad.DataTextField = "Nombre";
             ddlEspecialidad.DataValueField = "Id";
             ddlEspecialidad.DataBind();
+            TurnoTrabajoNegocio turnoNegocio = new TurnoTrabajoNegocio();
+            ddlTurnoTrabajo.DataSource = turnoNegocio.listar();
+            ddlTurnoTrabajo.DataValueField = "Id";
+            ddlTurnoTrabajo.DataTextField = "Nombre";
+            ddlTurnoTrabajo.DataBind();
         }
 
         private void cargarGrilla()
@@ -39,14 +44,34 @@ namespace SistemaClinica
             try
             {
                 MedicoNegocio negocio = new MedicoNegocio();
+                string dniIngresado = txtDni.Text.Trim();
+
+                //Validar DNI único antes de registrar un alta nueva
+                if (string.IsNullOrEmpty(hfIdMedico.Value))
+                {
+                    if (negocio.existeDni(dniIngresado))
+                    {
+                        string script = "alert('Error: Ya existe un médico registrado con el DNI " + dniIngresado + ".');";
+                        ScriptManager.RegisterStartupScript(this, this.GetType(), "alertDuplicado", script, true);
+                        return; 
+                    }
+                }
+
+
                 Medico med = new Medico();
 
                 med.Nombre = txtNombre.Text;
                 med.Apellido = txtApellido.Text;
+                med.DNI = dniIngresado;
                 med.Matricula = txtMatricula.Text;
-                
-                med.Email = "";
-                
+                med.Telefono = txtTelefono.Text; 
+                med.Email = txtEmail.Text;
+                med.Especialidades = new List<Especialidad>();
+                Especialidad espSeleccionada = new Especialidad { Id = Convert.ToInt32(ddlEspecialidad.SelectedValue) };
+                med.Especialidades.Add(espSeleccionada);
+                med.TurnoTrabajo = new TurnoTrabajo { Id = Convert.ToInt32(ddlTurnoTrabajo.SelectedValue) };
+
+
                 int IdEsp = Convert.ToInt32(ddlEspecialidad.SelectedValue);
                 
 
@@ -65,6 +90,7 @@ namespace SistemaClinica
             }
             catch (Exception ex)
             {
+                throw ex;
                 Session.Add("error", ex.ToString());
                 Response.Redirect("Error.aspx", false);
             }
@@ -85,6 +111,12 @@ namespace SistemaClinica
                     txtNombre.Text = seleccionado.Nombre;
                     txtApellido.Text = seleccionado.Apellido;
                     txtMatricula.Text = seleccionado.Matricula;
+                    txtDni.Text = seleccionado.DNI;
+                    txtTelefono.Text = seleccionado.Telefono;
+                    txtEmail.Text = seleccionado.Email;
+                    ddlEspecialidad.SelectedValue = seleccionado.Especialidades[0].Id.ToString();
+
+
                     if (seleccionado.Especialidades != null && seleccionado.Especialidades.Count > 0)
                     {
                         ddlEspecialidad.SelectedValue = seleccionado.Especialidades[0].Id.ToString();
@@ -92,6 +124,16 @@ namespace SistemaClinica
                     else
                     {
                         if (ddlEspecialidad.Items.Count > 0) ddlEspecialidad.SelectedIndex = 0;
+                    }
+
+                  
+                    if (seleccionado.TurnoTrabajo != null && seleccionado.TurnoTrabajo.Id > 0)
+                    {
+                        ddlTurnoTrabajo.SelectedValue = seleccionado.TurnoTrabajo.Id.ToString();
+                    }
+                    else
+                    {
+                        if (ddlTurnoTrabajo.Items.Count > 0) ddlTurnoTrabajo.SelectedIndex = 0;
                     }
 
                     litTituloForm.Text = "Editar Datos Médico N° " + idSeleccionado;

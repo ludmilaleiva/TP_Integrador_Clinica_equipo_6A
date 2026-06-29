@@ -81,6 +81,7 @@ namespace SistemaClinica
                     ddlMedico.DataTextField = "NombreCompleto";
                     ddlMedico.DataBind();
 
+
                     // Habilitamos el combo de médicos que antes estaba vacío
                     ddlMedico.Items.Insert(0, new ListItem("Seleccione un médico...", ""));
 

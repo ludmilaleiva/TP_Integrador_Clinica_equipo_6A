@@ -13,8 +13,9 @@ namespace dominio
         public string Apellido { get; set; }
         public string DNI { get; set; }
         public string Matricula { get; set; }
-        public string Email { get; set; }
         public string Telefono { get; set; }
+        public string Email { get; set; }
+        
         public TurnoTrabajo TurnoTrabajo { get; set; } // Relación con el turno asignado
         public Usuario Usuario { get; set; } // Puede ser NULL si el médico no entra al sistema
         // Relación N:N de Medico_Especialidades: una lista con todas sus especialidades

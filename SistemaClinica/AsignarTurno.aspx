@@ -33,8 +33,12 @@
 
                     <div class="col-md-6">
                         <label class="form-label fw-bold text-secondary">Especialidad Requerida *</label>
-                        <asp:DropDownList ID="ddlEspecialidad" runat="server" CssClass="form-select form-control-clinica" 
-                            AutoEventWireup="true" AutoPostBack="true" OnSelectedIndexChanged="ddlEspecialidad_SelectedIndexChanged">
+                        <asp:DropDownList 
+                            ID="ddlEspecialidad" 
+                            runat="server" 
+                            CssClass="form-select form-control-clinica"
+                            AutoPostBack="true"
+                            OnSelectedIndexChanged="ddlEspecialidad_SelectedIndexChanged">
                             <asp:ListItem Text="Seleccione una especialidad..." Value="" />
                         </asp:DropDownList>
                     </div>

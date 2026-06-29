@@ -30,18 +30,36 @@
                         <asp:TextBox ID="txtApellido" runat="server" CssClass="form-control" placeholder="Ej: González"></asp:TextBox>
                     </div>
                     <div class="mb-3">
+                     <label class="form-label font-weight-bold">DNI</label>
+                     <asp:TextBox ID="txtDni" runat="server" CssClass="form-control" Placeholder="Ej: 45123456" Required="true" TextMode="Number" />
+                    </div>
+
+                    <div class="mb-3">
                         <label class="form-label small fw-bold text-secondary">Matrícula</label>
                         <asp:TextBox ID="txtMatricula" runat="server" CssClass="form-control" placeholder="Ej: MN-45678"></asp:TextBox>
                     </div>
                     <div class="mb-3">
+                         <label class="form-label font-weight-bold">Teléfono</label>
+                         <asp:TextBox ID="txtTelefono" runat="server" CssClass="form-control" Placeholder="Ej: 1123456789" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label font-weight-bold">Email</label>
+                        <asp:TextBox ID="txtEmail" runat="server" CssClass="form-control" Placeholder="Ej: medico@clinica.com" TextMode="Email" />
+                     </div>
+                    <div class="mb-3">
                         <label class="form-label small fw-bold text-secondary">Especialidad</label>
                         <asp:DropDownList ID="ddlEspecialidad" runat="server" CssClass="form-select"></asp:DropDownList>
+                    </div>
+                    <div class="mb-3">
+                      <label class="form-label font-weight-bold">Turno de Trabajo</label>
+                      <asp:DropDownList ID="ddlTurnoTrabajo" runat="server" CssClass="form-select"></asp:DropDownList>
                     </div>
 
                     <div class="d-grid gap-2">
                         <asp:Button ID="btnGuardar" runat="server" Text="Guardar Médico" CssClass="btn btn-success" OnClick="btnGuardar_Click" />
                         <asp:Button ID="btnCancelar" runat="server" Text="Limpiar / Nuevo" CssClass="btn btn-outline-secondary" OnClick="btnCancelar_Click" />
                     </div>
+       
                 </div>
             </div>
         </div>
@@ -53,18 +71,23 @@
                         <asp:GridView ID="dgvMedicos" runat="server" CssClass="table table-hover align-middle mb-0" 
                             AutoGenerateColumns="false" DataKeyNames="Id" OnRowCommand="dgvMedicos_RowCommand" GridLines="None">
                             <Columns>
-                                <asp:BoundField HeaderText="ID" DataField="Id" ItemStyle-CssClass="fw-bold text-muted small" />
+                               <asp:BoundField HeaderText="ID" DataField="Id" ItemStyle-CssClass="fw-bold text-muted small" />
+                                <asp:BoundField HeaderText="DNI" DataField="DNI" />
                                 <asp:BoundField HeaderText="Apellido" DataField="Apellido" ItemStyle-CssClass="fw-bold" />
                                 <asp:BoundField HeaderText="Nombre" DataField="Nombre" />
                                 <asp:BoundField HeaderText="Matrícula" DataField="Matricula" />
+                                <asp:BoundField HeaderText="Teléfono" DataField="Telefono" />
                                 <asp:BoundField HeaderText="Email" DataField="Email" />
-                                <asp:TemplateField HeaderText="Especialidad">
-                                <ItemTemplate>
-                                <span class="badge bg-info text-dark">
-                                <%# ((List<dominio.Especialidad>)Eval("Especialidades")).Count > 0 ? ((List<dominio.Especialidad>)Eval("Especialidades"))[0].Nombre : "Sin Asignar" %>
-                                 </span>
+                                
+                               <asp:TemplateField HeaderText="Especialidad">
+                                  <ItemTemplate>
+                                        <span class="badge bg-info text-dark">
+                                            <%# Eval("Especialidades") != null && ((List<dominio.Especialidad>)Eval("Especialidades")).Count > 0 ? 
+                                                ((List<dominio.Especialidad>)Eval("Especialidades"))[0].Nombre : "Sin Asignar" %>
+                                        </span>
                                     </ItemTemplate>
-                                   </asp:TemplateField>
+                                </asp:TemplateField>
+                                 
                                
                                 
                                 <asp:TemplateField HeaderText="Acciones" ItemStyle-CssClass="text-end pe-3">

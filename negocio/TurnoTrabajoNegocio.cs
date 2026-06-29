@@ -16,7 +16,14 @@ namespace negocio
             try
             {
                 
-                datos.setearConsulta("SELECT Id, Nombre, HoraEntrada, HoraSalida, Descripcion FROM TurnosTrabajo WHERE Activo = 1");
+                datos.setearConsulta(@"
+            SELECT Id, 
+                   Nombre + ' (' + LEFT(CONVERT(varchar, HoraEntrada, 108), 5) + ' a ' + LEFT(CONVERT(varchar, HoraSalida, 108), 5) + ')' AS Nombre, 
+                   HoraEntrada, 
+                   HoraSalida, 
+                   Descripcion 
+            FROM TurnosTrabajo 
+            WHERE Activo = 1");
                 datos.ejecutarLectura();
 
                 while (datos.Lector.Read())
