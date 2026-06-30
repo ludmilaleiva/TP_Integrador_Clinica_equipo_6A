@@ -75,7 +75,7 @@ namespace negocio
             {
                 // Trae los datos clave uniendo las tablas para armar los objetos complejos
                 datos.setearConsulta(@"
-            SELECT T.Id, T.Numero, T.Fecha, T.HoraInicio, T.HoraFin, T.ObservacionesPaciente,
+            SELECT T.Id, T.Numero, T.Fecha, T.HoraInicio, T.HoraFin, T.ObservacionesPaciente,T.ObservacionesMedico,
                    P.Id AS PacienteId, P.Nombre AS PacienteNombre, P.Apellido AS PacienteApellido,
                    M.Id AS MedicoId, M.Nombre AS MedicoNombre, M.Apellido AS MedicoApellido,
                    E.Id AS EspecialidadId, E.Nombre AS EspecialidadNombre,
@@ -100,7 +100,7 @@ namespace negocio
                     aux.HoraInicio = (TimeSpan)datos.Lector["HoraInicio"];
                     aux.HoraFin = (TimeSpan)datos.Lector["HoraFin"];
                     aux.ObservacionesPaciente = datos.Lector["ObservacionesPaciente"] != DBNull.Value ? datos.Lector["ObservacionesPaciente"].ToString() : "";
-
+                    aux.ObservacionesMedico = datos.Lector["ObservacionesMedico"] != DBNull.Value ? datos.Lector["ObservacionesMedico"].ToString() : "";
                     // Instancia y mapeo de los objetos compuestos en dominio
                     aux.Paciente = new Paciente
                     {
@@ -239,6 +239,20 @@ namespace negocio
             {
                 datos.cerrarConexion();
             }
+        }
+
+        public void agregarObservacionMedico(int idTurno, string observacion)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.setearConsulta("UPDATE Turnos SET ObservacionesMedico = @observacion WHERE Id = @id");
+                datos.setearParametro("@observacion", observacion);
+                datos.setearParametro("@id", idTurno);
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex) { throw ex; }
+            finally { datos.cerrarConexion(); }
         }
     }
 }
