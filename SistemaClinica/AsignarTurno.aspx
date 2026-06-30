@@ -11,14 +11,20 @@
         </div>
     </div>
 
+    <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
+
     <asp:Panel ID="pnlAlertaExito" runat="server" CssClass="alert alert-success alert-dismissible fade show shadow-sm d-none" role="alert">
         <strong><i class="fa-solid fa-circle-check me-2"></i>¡Turno Asignado!</strong> Se generó el comprobante y se envió el correo de confirmación.
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </asp:Panel>
 
-    <div class="row g-4">
+   <asp:UpdatePanel ID="upAsignarTurno" runat="server">
+    <ContentTemplate>
+
+      <div class="row g-4">
         
         <div class="col-lg-8">
+
             <div class="tarjeta-clinica shadow-sm mb-4">
                 <h3 class="headline-sm mb-4 text-secondary"><i class="fa-solid fa-file-invoice me-2"></i>Datos del Turno</h3>
                 
@@ -49,19 +55,20 @@
 
                     <div class="col-md-6">
                         <label class="form-label fw-bold text-secondary">Médico Especialista *</label>
-                        <asp:DropDownList ID="ddlMedico" runat="server" CssClass="form-select form-control-clinica">
+                        <asp:DropDownList ID="ddlMedico" runat="server" CssClass="form-select form-control-clinica" >
+                 
                             <asp:ListItem Text="Seleccione primero la especialidad..." Value="" />
                         </asp:DropDownList>
                     </div>
 
                     <div class="col-md-3">
                         <label class="form-label fw-bold text-secondary">Fecha del Turno *</label>
-                        <asp:TextBox ID="txtFechaTurno" runat="server" CssClass="form-control form-control-clinica" TextMode="Date" AutoPostBack="true" OnTextChanged="txtFechaTurno_TextChanged"></asp:TextBox>
+                        <asp:TextBox ID="txtFechaTurno" runat="server" CssClass="form-control form-control-clinica" TextMode="Date" AutoPostBack="true" OnTextChanged="txtFechaTurno_TextChanged" Enabled="false"></asp:TextBox>
                     </div>
 
                     <div class="col-md-3">
                         <label class="form-label fw-bold text-secondary">Horarios Disponibles *</label>
-                        <asp:DropDownList ID="ddlHorario" runat="server" CssClass="form-select form-control-clinica">
+                        <asp:DropDownList ID="ddlHorario" runat="server" CssClass="form-select form-control-clinica" Enabled="false">
                             <asp:ListItem Text="Seleccione día..." Value="" />
                         </asp:DropDownList>
                     </div>
@@ -88,31 +95,48 @@
                     <small class="text-white-50">Opciones rápidas basadas en la especialidad</small>
                 </div>
                 <div class="card-body bg-light">
-                    <div class="d-grid gap-3">
-                        <div class="p-3 border rounded bg-white shadow-xs position-relative hover-tarjeta" style="cursor: pointer; border-left: 4px solid var(--bs-success) !important;">
-                            <span class="badge bg-success position-absolute top-0 end-0 m-2">Más próximo</span>
-                            <h6 class="fw-bold mb-1 text-primary">Dr. Claudio Rossi</h6>
-                            <p class="mb-0 small text-dark"><i class="fa-regular fa-calendar me-1"></i>Mañana, 15 de Junio</p>
-                            <p class="mb-0 small text-muted"><i class="fa-regular fa-clock me-1"></i>10:00 a 11:00 hs</p>
-                        </div>
+            <div class="d-grid gap-3">
+                <%-- 🚀 REPEATER DINÁMICO: Reemplaza las 3 tarjetas fijas --%>
+                <asp:Repeater ID="repHorariosSugeridos" runat="server" OnItemCommand="repHorariosSugeridos_ItemCommand">
+                    <ItemTemplate>
+                        <asp:LinkButton 
+                            ID="btnSeleccionarSugerido" 
+                            runat="server"
+                            CommandName="SeleccionarTurno"
+                            CommandArgument='<%# Eval("IdMedico") + "|" + Eval("FechaSql") + "|" + Eval("HoraInicio") %>'
+                            CssClass="p-3 border rounded bg-white shadow-xs position-relative hover-tarjeta d-block"
+                            Style="text-decoration: none; text-align: left; border-left: 4px solid var(--bs-primary) !important;">
 
-                        <div class="p-3 border rounded bg-white shadow-xs hover-tarjeta" style="cursor: pointer; border-left: 4px solid var(--bs-primary) !important;">
-                            <h6 class="fw-bold mb-1 text-primary">Dra. Natalia Soler</h6>
-                            <p class="mb-0 small text-dark"><i class="fa-regular fa-calendar me-1"></i>Mañana, 15 de Junio</p>
-                            <p class="mb-0 small text-muted"><i class="fa-regular fa-clock me-1"></i>14:00 a 15:00 hs</p>
-                        </div>
+                            <%# Container.ItemIndex == 0 ? "<span class='badge bg-success position-absolute top-0 end-0 m-2'>Más próximo</span>" : "" %>
 
-                        <div class="p-3 border rounded bg-white shadow-xs hover-tarjeta" style="cursor: pointer; border-left: 4px solid var(--bs-primary) !important;">
-                            <h6 class="fw-bold mb-1 text-primary">Dr. Claudio Rossi</h6>
-                            <p class="mb-0 small text-dark"><i class="fa-regular fa-calendar me-1"></i>Miércoles, 17 de Junio</p>
-                            <p class="mb-0 small text-muted"><i class="fa-regular fa-clock me-1"></i>11:00 a 12:00 hs</p>
-                        </div>
-                    </div>
-                </div>
+                            <h6 class="fw-bold mb-1 text-primary">
+                                Dr/a. <%# Eval("NombreMedico") %>
+                            </h6>
+
+                            <p class="mb-0 small text-dark">
+                                <i class="fa-regular fa-calendar me-1"></i>
+                                <%# Eval("FechaTexto") %>
+                            </p>
+
+                            <p class="mb-0 small text-muted">
+                                <i class="fa-regular fa-clock me-1"></i>
+                                <%# Eval("HoraTexto") %> hs
+                            </p>
+
+                        </asp:LinkButton>
+                    </ItemTemplate>
+                    <FooterTemplate>
+                        <%-- Mensaje por si no hay sugerencias disponibles --%>
+                        <asp:Label ID="lblSinSugerencias" runat="server" Text="No hay sugerencias disponibles para esta especialidad." 
+                            Visible='<%# repHorariosSugeridos.Items.Count == 0 %>' CssClass="text-muted small p-2 d-block text-center italic" />
+                    </FooterTemplate>
+                </asp:Repeater>
             </div>
         </div>
 
-    </div>
+        </div>
+      </ContentTemplate>
+   </asp:UpdatePanel>
 
     <style>
         .hover-tarjeta:hover {
