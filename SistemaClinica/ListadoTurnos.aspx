@@ -64,9 +64,12 @@
                     <%-- Columna de Estado con Badge Dinámico --%>
                     <asp:TemplateField HeaderText="Estado">
                         <ItemTemplate>
-                            <%# Eval("Estado.Nombre").ToString() == "Cancelado" ? "<span class='badge bg-danger'>Cancelado</span>" :
-                                Eval("Estado.Nombre").ToString() == "Reprogramado" ? "<span class='badge bg-warning text-dark'>Reprogramado</span>" :
-                                "<span class='badge bg-success'>Nuevo</span>" %>
+                            <%# Eval("Estado.id").ToString() == "3" ? "<span class='badge bg-danger'>Cancelado</span>" :
+                                Eval("Estado.id").ToString() == "2" ? "<span class='badge bg-warning text-dark'>Reprogramado</span>" :
+                                Eval("Estado.id").ToString() == "4" ? "<span class='badge bg-secondary'>No Asistió</span>":
+                                 Eval("Estado.id").ToString() == "1" ? "<span class='badge bg-success'>Nuevo</span>":
+                                 "<span class='badge bg-success'>Sin estado</span>"
+                                 %>
                         </ItemTemplate>
                     </asp:TemplateField>
 
@@ -75,16 +78,23 @@
                           <%-- Botón Cancelar (Se oculta/deshabilita si ya está Cancelado o Cerrado) --%>
                         <asp:LinkButton ID="btnCancelar" runat="server" CommandName="Cancelar" 
                             CommandArgument='<%# Eval("Id") %>' CssClass="btn btn-sm btn-outline-danger"
-                            Visible='<%# Eval("Estado.Nombre").ToString() != "Cancelado" && Eval("Estado.Nombre").ToString() != "Cerrado" %>'>
+                            Visible='<%# Eval("Estado.Nombre").ToString() != "Cancelado" && Eval("Estado.Nombre").ToString() != "Cerrado"  && Eval("Estado.id").ToString() != "4"  %>'>
                             <i class="bi bi-x-circle"></i> Cancelar
                         </asp:LinkButton>
 
                         <%-- Botón Reprogramar --%>
                         <asp:LinkButton ID="btnReprogramar" runat="server" CommandName="Reprogramar" 
                             CommandArgument='<%# Eval("Id") %>' CssClass="btn btn-sm btn-outline-warning"
-                            Visible='<%# Eval("Estado.Nombre").ToString() != "Cancelado" && Eval("Estado.Nombre").ToString() != "Cerrado" %>'>
+                            Visible='<%# Eval("Estado.Nombre").ToString() != "Cancelado" && Eval("Estado.Nombre").ToString() != "Cerrado"  && Eval("Estado.id").ToString() != "4"  %>'>
                             <i class="bi bi-calendar-event"></i> Reprogramar
                         </asp:LinkButton>
+
+                       <asp:LinkButton ID="btnNoAsistio" runat="server" CommandName="NoAsistio" 
+                            CommandArgument='<%# Eval("Id") %>' CssClass="btn btn-sm btn-warning text-dark"
+                            Visible='<%# Eval("Estado.Nombre").ToString() != "Cancelado"  && Eval("Estado.id").ToString() != "4"  && Eval("Estado.Nombre").ToString() != "Reprogramado" && Eval("Estado.Nombre").ToString() != "Cerrado" && Eval("Estado.Nombre").ToString() != "No Asistió" %>'>
+                            <i class="bi bi-person-x"></i> No Asistió
+                        </asp:LinkButton>
+
                         </ItemTemplate>
                     </asp:TemplateField>
                 </Columns>

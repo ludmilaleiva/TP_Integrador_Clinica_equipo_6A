@@ -128,7 +128,9 @@ namespace negocio
                         Nombre = datos.Lector["EstadoNombre"].ToString()
                     };
 
-                    lista.Add(aux);
+                   
+                
+                lista.Add(aux);
                 }
 
                 return lista;
@@ -206,6 +208,28 @@ namespace negocio
                     return t;
                 }
                 return null;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+        public void registrarAusencia(int idTurno)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                //Cambiamos el EstadoId a 4 (No Asistió)
+                datos.setearConsulta("UPDATE Turnos SET EstadoId = 4 WHERE Id = @id");
+                datos.setearParametro("@id", idTurno);
+                datos.ejecutarAccion();
+
+           
             }
             catch (Exception ex)
             {

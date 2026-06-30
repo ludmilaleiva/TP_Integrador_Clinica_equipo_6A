@@ -87,36 +87,48 @@ namespace SistemaClinica
         // Manejo de eventos de las filas (como el botón Cancelar)
         protected void dgvTurnos_RowCommand(object sender, GridViewCommandEventArgs e)
         {
-
-            int idTurno = Convert.ToInt32(e.CommandArgument);
-
-            if (e.CommandName == "CancelarTurno")
+            // 1. Si es Reprogramar, redirigimos directamente antes de parsear nada más
+            if (e.CommandName == "Reprogramar")
             {
-                try
-                {
+                int idTurno = Convert.ToInt32(e.CommandArgument);
+                Response.Redirect($"AsignarTurno.aspx?reprogramarId={idTurno}");
+                return;
+            }
 
-                    // Instanciamos el negocio y ejecutamos la baja lógica
-                    TurnoNegocio negocio = new TurnoNegocio();
+            try
+            {
+                int idTurno = Convert.ToInt32(e.CommandArgument);
+                TurnoNegocio negocio = new TurnoNegocio();
+
+                // Sincronizado con "Cancelar" que es el CommandName de tu HTML
+                if (e.CommandName == "Cancelar")
+                {
                     negocio.cancelar(idTurno);
 
-                    ScriptManager.RegisterStartupScript(this, this.GetType(), "alert", $"alert('Turno ID {idTurno} cancelado (Falta query UPDATE en BD)');", true);
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "alert", $"alert('Turno N° {idTurno} cancelado con éxito.');", true);
 
-                    // Reseteamos y recargamos
                     Session["ListaTurnos"] = null;
                     cargarGrilla();
                 }
-                catch (Exception ex)
+                // Procesa "NoAsistio" e impacta el cambio
+                else if (e.CommandName == "NoAsistio")
                 {
-                    Session.Add("error", ex.ToString());
-                    Response.Redirect("Error.aspx", false);
+                    // ALERT DE PRUEBA: Si ves este cartel, significa que el evento RowCommand está llegando correctamente acá
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "alertTest", $"alert('¡Llegó al bloque NoAsistio! ID del turno: {idTurno}');", true);
+
+                    // Ejecuta el UPDATE a EstadoId = 4
+                    negocio.registrarAusencia(idTurno);
+
+                    // Limpia la sesión para actualizar el Badge a gris al instante
+                    Session["ListaTurnos"] = null;
+                    cargarGrilla();
                 }
             }
-            else if (e.CommandName == "Reprogramar")
+            catch (Exception ex)
             {
-                // Redirige a la pantalla de Asignar pasando el ID del turno original por QueryString
-                Response.Redirect($"AsignarTurno.aspx?reprogramarId={idTurno}");
+                Session.Add("error", ex.ToString());
+                Response.Redirect("Error.aspx", false);
             }
-
         }
     }
 }
