@@ -1,11 +1,12 @@
-﻿using System;
+﻿using acceso_datos;
+using dominio;
+using negocio;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using negocio;
-using dominio;
 
 namespace SistemaClinica
 {
@@ -18,6 +19,34 @@ namespace SistemaClinica
             {
                 cargarPacientes();
                 cargarEspecialidades();
+
+                if (Request.QueryString["reprogramarId"] != null)
+                {
+                    int idTurnoOriginal = Convert.ToInt32(Request.QueryString["reprogramarId"]);
+
+                    TurnoNegocio negocio = new TurnoNegocio();
+                    MedicoNegocio medicoNegocio = new MedicoNegocio();
+                    Turno turnoOriginal = negocio.buscarPorId(idTurnoOriginal); // Necesitás este método que devuelva un Turno
+                    string idEspecialidad = turnoOriginal.Especialidad.Id.ToString();
+                    if (turnoOriginal != null)
+                    {
+                        // 1. Pre-selecciona al Paciente
+                        ddlPaciente.SelectedValue = turnoOriginal.Paciente.Id.ToString();
+                        ddlPaciente.Enabled = false;
+
+                        // Pre-selecciona la Especialidad original
+                        ddlEspecialidad.SelectedValue = idEspecialidad;
+
+                        //CargarMedicosPorEspecialidad(turnoOriginal.Especialidad.Id);
+                        ddlMedico.DataSource = medicoNegocio.listarPorEspecialidad(Convert.ToInt32(idEspecialidad));
+                        ddlMedico.DataValueField = "Id";
+                        ddlMedico.DataTextField = "NombreCompleto";
+                        ddlMedico.DataBind();
+
+                        // Avisamos visualmente en las observaciones
+                        txtObservaciones.Text = $"Reprogramación del turno número: {turnoOriginal.Numero}. ";
+                    }
+                }
             }
         }
 
@@ -235,7 +264,23 @@ namespace SistemaClinica
 
                 // Guardamos en la base de datos (con su correspondiente TurnoHistorial adentro)
                 TurnoNegocio negocio = new TurnoNegocio();
-                negocio.agregar(nuevoTurno);
+                if (Request.QueryString["reprogramarId"] != null)
+                {
+                    int idOriginal = Convert.ToInt32(Request.QueryString["reprogramarId"]);
+                    nuevoTurno.TurnoOriginalId = idOriginal;
+                    nuevoTurno.Estado = new EstadoTurno { Id = 2 }; // EstadoId = 2 ('Reprogramado')
+
+                    // 1. Guardamos primero el nuevo turno
+                    negocio.agregar(nuevoTurno);
+
+                    //Se reprograma el turno 
+                    negocio.reprogramarTurno(idOriginal);
+                }
+                else
+                {
+                    nuevoTurno.Estado = new EstadoTurno { Id = 1 }; // EstadoId = 1 ('Nuevo')
+                    negocio.agregar(nuevoTurno);
+                }
 
                 //MÓDULO DE ENVÍO DE EMAIL AL PACIENTE
                 /*try
@@ -292,6 +337,29 @@ namespace SistemaClinica
             ddlHorario.Items.Insert(0, new ListItem("Seleccione médico y fecha...", ""));
 
             txtFechaTurno.Text = "";
+        }
+
+        public Turno buscarPorId(int id)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.setearConsulta("SELECT Id, Numero, PacienteId FROM Turnos WHERE Id = @id");
+                datos.setearParametro("@id", id);
+                datos.ejecutarLectura();
+
+                if (datos.Lector.Read())
+                {
+                    Turno t = new Turno();
+                    t.Id = Convert.ToInt32(datos.Lector["Id"]);
+                    t.Numero = datos.Lector["Numero"].ToString();
+                    t.Paciente = new Paciente { Id = Convert.ToInt32(datos.Lector["PacienteId"]) };
+                    return t;
+                }
+                return null;
+            }
+            catch (Exception ex) { throw ex; }
+            finally { datos.cerrarConexion(); }
         }
     }
 }

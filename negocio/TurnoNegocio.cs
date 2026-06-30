@@ -162,5 +162,59 @@ namespace negocio
                 datos.cerrarConexion();
             }
         }
+
+        public void reprogramarTurno(int idTurno)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                //Cambiamos el EstadoId a 2 (Reprogramado) para el turno que se está reemplazando
+                datos.setearConsulta("UPDATE Turnos SET EstadoId = 2 WHERE Id = @id");
+                datos.setearParametro("@id", idTurno);
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+        public Turno buscarPorId(int id)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                // Traemos las claves del turno viejo para saber a qué paciente corresponde
+                datos.setearConsulta("SELECT Id, Numero, PacienteId, EspecialidadId FROM Turnos WHERE Id = @id");
+                datos.setearParametro("@id", id);
+                datos.ejecutarLectura();
+
+                if (datos.Lector.Read())
+                {
+                    Turno t = new Turno();
+                    t.Id = Convert.ToInt32(datos.Lector["Id"]);
+                    t.Numero = datos.Lector["Numero"].ToString();
+
+                    // Inicializamos el objeto complejo Paciente con su ID para poder pre-seleccionarlo
+                    t.Paciente = new Paciente { Id = Convert.ToInt32(datos.Lector["PacienteId"]) };
+                    t.Especialidad = new Especialidad { Id = Convert.ToInt32(datos.Lector["EspecialidadId"]) };
+
+                    return t;
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
     }
 }
