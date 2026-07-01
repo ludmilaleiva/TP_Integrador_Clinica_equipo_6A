@@ -69,6 +69,7 @@
     <Content Include="Medicos.aspx" />
     <Content Include="MisTurnos.aspx" />
     <Content Include="Pacientes.aspx" />
+    <Content Include="SinPermiso.aspx" />
     <Content Include="TurnoTrabajo.aspx" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -124,6 +125,14 @@
     </Compile>
     <Compile Include="Pacientes.aspx.designer.cs">
       <DependentUpon>Pacientes.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Seguridad.cs" />
+    <Compile Include="SinPermiso.aspx.cs">
+      <DependentUpon>SinPermiso.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="SinPermiso.aspx.designer.cs">
+      <DependentUpon>SinPermiso.aspx</DependentUpon>
     </Compile>
     <Compile Include="Site.Master.cs">
       <DependentUpon>Site.Master</DependentUpon>

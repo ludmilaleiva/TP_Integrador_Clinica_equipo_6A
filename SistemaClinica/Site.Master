@@ -192,25 +192,25 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-1">
-                        <li class="nav-item">
+                        <li id="liDefault" runat="server">
                             <a class="nav-link" href="Default.aspx"><i class="fa-solid fa-chart-pie me-1"></i> Panel Inicio</a>
                         </li>
-                        <li class="nav-item">
+                        <li id="liAsignarTurno" runat="server">
                             <a class="nav-link" href="AsignarTurno.aspx"><i class="fa-solid fa-calendar-plus me-1"></i> Asignar Turno</a>
                         </li>
-                        <li class="nav-item">
+                        <li id="liListadoTurnos" runat="server">
                             <a class="nav-link" href="ListadoTurnos.aspx"><i class="fa-solid fa-table-list me-1"></i> Control de Turnos</a>
                         </li>
-                        <li class="nav-item">
+                        <li id="liPacientes" runat="server">
                             <a class="nav-link" href="Pacientes.aspx"><i class="fa-solid fa-address-book me-1"></i> Registro Pacientes</a>
                         </li>
-                        <li class="nav-item">
+                        <li id="liMedicos" runat="server">
                          <a class="nav-link" href="Medicos.aspx"><i class="fa-solid fa-user-doctor me-1"></i>Gestión Médicos</a>
                         </li>
-                        <li class="nav-item">
+                        <li id="liTurnoTrabajo" runat="server">
                           <a class="nav-link" href="TurnoTrabajo.aspx"><i class="fa-solid fa-clock me-1"></i>Turnos de Trabajo</a>
                         </li>
-                        <li class="nav-item">
+                        <li id="liMisTurnos" runat="server">
                             <a class="nav-link" href="MisTurnos.aspx"><i class="fa-solid fa-user-doctor me-1"></i> Mis Turnos</a>
                         </li>
                         
