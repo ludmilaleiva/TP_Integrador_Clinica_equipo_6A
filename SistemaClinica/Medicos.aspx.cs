@@ -150,12 +150,21 @@ namespace SistemaClinica
 
         private void limpiarFormulario()
         {
-            hfIdMedico.Value = "";
             txtNombre.Text = "";
             txtApellido.Text = "";
+            txtDni.Text = "";
             txtMatricula.Text = "";
-            if (ddlEspecialidad.Items.Count > 0) ddlEspecialidad.SelectedIndex = 0;
-            litTituloForm.Text = "Registrar / Modificar Médico";
+            txtTelefono.Text = "";
+            txtEmail.Text = "";
+
+            ddlEspecialidad.SelectedIndex = 0;
+            ddlTurnoTrabajo.SelectedIndex = 0;
+
+            hfIdMedico.Value = "";
+
+            btnGuardar.Text = "Guardar Médico";
         }
+
+
     }
 }

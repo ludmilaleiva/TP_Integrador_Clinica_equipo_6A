@@ -116,6 +116,11 @@ namespace SistemaClinica
             txtDireccion.Text = "";
             txtObraSocial.Text = "";
             txtNroAfiliado.Text = "";
+
+            hfIdPaciente.Value = "";
+            Session.Remove("IdPacienteSeleccionado");
+
+            btnGuardar.Text = "Guardar Paciente";
         }
 
         protected void btnEditar_Click(object sender, EventArgs e)
@@ -133,34 +138,31 @@ namespace SistemaClinica
                 Paciente seleccionado = negocio.buscarPorId(idPaciente);
 
                 if (seleccionado != null)
-                    // Guardamos el ID en la sesión temporal para saber a quién estamos editando al presionar Guardar
-                    Session.Add("IdPacienteSeleccionado", seleccionado.Id);
+                {
+                    Session["IdPacienteSeleccionado"] = seleccionado.Id;
+                    hfIdPaciente.Value = seleccionado.Id.ToString();
 
-                //RELLENAMOS EL FORMULARIO CON LOS DATOS REALES
-                txtNombre.Text = seleccionado.Nombre;
-                txtApellido.Text = seleccionado.Apellido;
-                txtDNI.Text = seleccionado.DNI;
+                    txtNombre.Text = seleccionado.Nombre;
+                    txtApellido.Text = seleccionado.Apellido;
+                    txtDNI.Text = seleccionado.DNI;
+                    txtFechaNacimiento.Text = seleccionado.FechaNacimiento.ToString("yyyy-MM-dd");
+                    ddlSexo.SelectedValue = seleccionado.Sexo.ToString();
+                    txtEmail.Text = seleccionado.Email;
+                    txtTelefono.Text = seleccionado.Telefono;
+                    txtDireccion.Text = seleccionado.Direccion;
+                    txtObraSocial.Text = seleccionado.ObraSocial;
+                    txtNroAfiliado.Text = seleccionado.NroAfiliado;
 
-                // Formateamos la fecha para que el input de tipo date de HTML la entienda perfectamente (yyyy-MM-dd)
-                txtFechaNacimiento.Text = seleccionado.FechaNacimiento.ToString("yyyy-MM-dd");
+                    btnGuardar.Text = "Modificar Paciente";
 
-                ddlSexo.SelectedValue = seleccionado.Sexo.ToString();
-                txtEmail.Text = seleccionado.Email;
-                txtTelefono.Text = seleccionado.Telefono;
-                txtDireccion.Text = seleccionado.Direccion;
-                txtObraSocial.Text = seleccionado.ObraSocial;
-                txtNroAfiliado.Text = seleccionado.NroAfiliado;
+                    string script = @"
+                    document.getElementById('seccionFormulario').scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start' 
+                    });";
 
-                
-                btnGuardar.Text = "Modificar Paciente";
-
-                string script = @"
-                document.getElementById('seccionFormulario').scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'start' 
-                });";
-
-                ScriptManager.RegisterStartupScript(this, this.GetType(), "ScrollFormulario", script, true);
+                    ScriptManager.RegisterStartupScript(this, this.GetType(), "ScrollFormulario", script, true);
+                }
             }
 
             catch (Exception ex)
