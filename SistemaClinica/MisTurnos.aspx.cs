@@ -23,15 +23,32 @@ namespace SistemaClinica
 
         private void cargarGrillaMedico()
         {
-            TurnoNegocio negocio = new TurnoNegocio();
-            List<Turno> listaCompleta = negocio.listar();
+            if (Session["UsuarioId"] == null)
+            {
+                Response.Redirect("Login.aspx");
+                return;
+            }
 
-            //int idMedicoLogueado = 1; // usar el ID que venga de tu Session["UsuarioLogueado"]
+            int usuarioId = Convert.ToInt32(Session["UsuarioId"]);
 
-            //var listaFiltrada = listaCompleta.Where(x => x.Medico.Id == idMedicoLogueado).ToList();
+            MedicoNegocio medicoNegocio = new MedicoNegocio();
+            Medico medicoLogueado = medicoNegocio.buscarPorUsuarioId(usuarioId);
 
-            
-            dgvTurnosMedico.DataSource = listaCompleta;
+            if (medicoLogueado == null)
+            {
+                dgvTurnosMedico.DataSource = null;
+                dgvTurnosMedico.DataBind();
+                return;
+            }
+
+            TurnoNegocio turnoNegocio = new TurnoNegocio();
+            List<Turno> listaCompleta = turnoNegocio.listar();
+
+            List<Turno> listaFiltrada = listaCompleta
+                .Where(x => x.Medico != null && x.Medico.Id == medicoLogueado.Id)
+                .ToList();
+
+            dgvTurnosMedico.DataSource = listaFiltrada;
             dgvTurnosMedico.DataBind();
         }
 

@@ -1,9 +1,10 @@
-﻿using System;
+﻿using acceso_datos;
+using dominio;
+using negocio;
+using System;
 using System.Collections.Generic;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using dominio;
-using negocio;
 
 namespace SistemaClinica
 {
@@ -165,6 +166,7 @@ namespace SistemaClinica
             btnGuardar.Text = "Guardar Médico";
         }
 
+        
 
     }
 }

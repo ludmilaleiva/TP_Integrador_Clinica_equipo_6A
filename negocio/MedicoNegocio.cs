@@ -186,5 +186,44 @@ namespace negocio
             catch (Exception ex) { throw ex; }
             finally { datos.cerrarConexion(); }
         }
+
+        public Medico buscarPorUsuarioId(int usuarioId)
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta(@"
+            SELECT Id, Nombre, Apellido, DNI, Matricula, Email, Telefono, UsuarioId
+            FROM Medicos
+            WHERE UsuarioId = @UsuarioId
+              AND Activo = 1
+        ");
+
+                datos.setearParametro("@UsuarioId", usuarioId);
+                datos.ejecutarLectura();
+
+                if (datos.Lector.Read())
+                {
+                    Medico medico = new Medico();
+
+                    medico.Id = Convert.ToInt32(datos.Lector["Id"]);
+                    medico.Nombre = datos.Lector["Nombre"].ToString();
+                    medico.Apellido = datos.Lector["Apellido"].ToString();
+                    medico.DNI = datos.Lector["DNI"].ToString();
+                    medico.Matricula = datos.Lector["Matricula"].ToString();
+                    medico.Email = datos.Lector["Email"].ToString();
+                    medico.Telefono = datos.Lector["Telefono"].ToString();
+
+                    return medico;
+                }
+
+                return null;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
     }
 }
