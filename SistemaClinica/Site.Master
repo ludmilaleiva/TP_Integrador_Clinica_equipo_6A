@@ -213,6 +213,14 @@
                         <li class="nav-item">
                             <a class="nav-link" href="MisTurnos.aspx"><i class="fa-solid fa-user-doctor me-1"></i> Mis Turnos</a>
                         </li>
+                        
+                         <asp:LinkButton 
+                            ID="btnCerrarSesion" 
+                            runat="server" 
+                            CssClass="btn btn-outline-danger"
+                            OnClick="btnCerrarSesion_Click">
+                            Cerrar sesión
+                        </asp:LinkButton>
                         </ul>
                     
                 </div>

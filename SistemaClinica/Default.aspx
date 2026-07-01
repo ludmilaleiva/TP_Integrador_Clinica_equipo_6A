@@ -5,6 +5,8 @@
             <div class="tarjeta-clinica shadow-sm mb-4">
                 <div class="py-4 text-center">
                     <h1 class="text-primary mb-3">Sistema de Gestión Médica</h1>
+               
+            
                     <p class="col-md-9 mx-auto text-muted" style="font-size: 16px;">
                         Bienvenido al sistema de gestión de turnos de la clínica BioClinic. Seleccioná una opción para comenzar a operar
                     </p>
@@ -25,4 +27,9 @@
     </div>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+         <h1 class="text-primary mb-2">
+         Bienvenido, <asp:Label ID="lblNombreUsuario" runat="server"></asp:Label>
+     </h1>
+
+     
 </asp:Content>

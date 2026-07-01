@@ -12,7 +12,14 @@ namespace SistemaClinica
     public partial class AsignarTurno : System.Web.UI.Page
     {
         protected void Page_Load(object sender, EventArgs e)
+
         {
+            if (Session["UsuarioId"] == null)
+            {
+                Response.Redirect("Login.aspx");
+                return;
+            }
+
             if (!IsPostBack)
             {
                 cargarPacientes();

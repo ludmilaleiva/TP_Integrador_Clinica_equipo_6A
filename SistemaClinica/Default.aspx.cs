@@ -11,7 +11,16 @@ namespace SistemaClinica
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (Session["UsuarioId"] == null)
+            {
+                Response.Redirect("Login.aspx");
+                return;
+            }
 
+            if (!IsPostBack)
+            {
+                lblNombreUsuario.Text = Session["UsuarioNombre"].ToString();
+            }
         }
     }
 }
