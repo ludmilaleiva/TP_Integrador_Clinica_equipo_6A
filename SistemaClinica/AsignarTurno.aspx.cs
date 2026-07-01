@@ -336,6 +336,24 @@ namespace SistemaClinica
                 return;
             }
 
+            //Validacion de fecha y hora del turno
+            DateTime fechaTurno = Convert.ToDateTime(txtFechaTurno.Text);
+            TimeSpan horaInicioValidacion = TimeSpan.Parse(ddlHorario.SelectedValue);
+
+            if (fechaTurno.Date < DateTime.Today)
+            {
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "fechaPasada",
+                    "alert('No se puede confirmar un turno con fecha pasada.');", true);
+                return;
+            }
+
+            if (fechaTurno.Date == DateTime.Today && horaInicioValidacion <= DateTime.Now.TimeOfDay)
+            {
+                ScriptManager.RegisterStartupScript(this, this.GetType(), "horaPasada",
+                    "alert('No se puede confirmar un turno con horario vencido.');", true);
+                return;
+            }
+
             try
             {
                 Turno nuevoTurno = new Turno();
@@ -355,6 +373,27 @@ namespace SistemaClinica
                 nuevoTurno.Numero = $"T{añoActual}-{codigoCorto}";
 
                 TurnoNegocio negocio = new TurnoNegocio();
+
+                // VALIDACIÓN DE TURNO DUPLICADO
+                bool turnoDuplicado = negocio.existeTurnoDuplicado(
+                    nuevoTurno.Medico.Id,
+                    nuevoTurno.Paciente.Id,
+                    nuevoTurno.Fecha,
+                    nuevoTurno.HoraInicio
+                );
+
+                if (turnoDuplicado)
+                {
+                    ScriptManager.RegisterStartupScript(
+                        this,
+                        this.GetType(),
+                        "turnoDuplicado",
+                        "alert('El horario seleccionado ya no está disponible o el paciente ya posee un turno en ese mismo horario.');",
+                        true);
+
+                    return;
+                }
+                //fin de validacion de turno duplicado
 
                 if (Request.QueryString["reprogramarId"] != null)
                 {

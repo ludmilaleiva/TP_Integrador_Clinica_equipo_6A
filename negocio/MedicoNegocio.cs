@@ -108,16 +108,59 @@ namespace negocio
             finally { datos.cerrarConexion(); }
         }
 
-        //  AGREGAR MÉDICO Y SU ESPECIALIDAD 
+        //  AGREGAR MÉDICO, USUARIO ID Y SU ESPECIALIDAD 
         public void agregar(Medico nuevo, int idEspecialidad)
         {
             AccesoDatos datos = new AccesoDatos();
+
             try
             {
+                // 1) Crear usuario para el médico
                 datos.setearConsulta(@"
-                    INSERT INTO Medicos (Nombre, Apellido, DNI, Matricula, Telefono,Email, TurnoTrabajoId, Activo) 
-                    VALUES (@nombre, @apellido, @dni, @matricula, @telefono, @email, @turnoId, 1);
-                    SELECT SCOPE_IDENTITY();");
+            INSERT INTO Usuarios (Nombre, Email, PasswordHash, PerfilId, Activo, FechaAlta)
+            VALUES (@nombreUsuario, @emailUsuario, @password, 3, 1, GETDATE());
+
+            SELECT SCOPE_IDENTITY();
+        ");
+
+                datos.setearParametro("@nombreUsuario", nuevo.Nombre + " " + nuevo.Apellido);
+                datos.setearParametro("@emailUsuario", nuevo.Email);
+                datos.setearParametro("@password", "123456");
+
+                int idUsuarioInsertado = datos.ejecutarAccionScalar();
+                datos.cerrarConexion();
+
+                // 2) Crear médico asociado al usuario
+                datos = new AccesoDatos();
+
+                datos.setearConsulta(@"
+            INSERT INTO Medicos 
+            (
+                Nombre, 
+                Apellido, 
+                DNI, 
+                Matricula, 
+                Telefono,
+                Email, 
+                TurnoTrabajoId,
+                UsuarioId,
+                Activo
+            ) 
+            VALUES 
+            (
+                @nombre, 
+                @apellido, 
+                @dni, 
+                @matricula, 
+                @telefono, 
+                @email, 
+                @turnoId,
+                @usuarioId,
+                1
+            );
+
+            SELECT SCOPE_IDENTITY();
+        ");
 
                 datos.setearParametro("@nombre", nuevo.Nombre);
                 datos.setearParametro("@apellido", nuevo.Apellido);
@@ -125,21 +168,41 @@ namespace negocio
                 datos.setearParametro("@matricula", nuevo.Matricula);
                 datos.setearParametro("@telefono", nuevo.Telefono);
                 datos.setearParametro("@email", nuevo.Email);
-               
                 datos.setearParametro("@turnoId", nuevo.TurnoTrabajo.Id);
+                datos.setearParametro("@usuarioId", idUsuarioInsertado);
 
                 int idMedicoInsertado = datos.ejecutarAccionScalar();
                 datos.cerrarConexion();
 
-                // relación en la tabla intermedia Medico_Especialidades
+                // 3) Relación médico-especialidad
                 datos = new AccesoDatos();
-                datos.setearConsulta("INSERT INTO Medico_Especialidades (MedicoId, EspecialidadId) VALUES (@medicoId, @especialidadId)");
+
+                datos.setearConsulta(@"
+            INSERT INTO Medico_Especialidades 
+            (
+                MedicoId, 
+                EspecialidadId
+            ) 
+            VALUES 
+            (
+                @medicoId, 
+                @especialidadId
+            )
+        ");
+
                 datos.setearParametro("@medicoId", idMedicoInsertado);
-                datos.setearParametro("@especialidadId", nuevo.Especialidades[0].Id);
+                datos.setearParametro("@especialidadId", idEspecialidad);
+
                 datos.ejecutarAccion();
             }
-            catch (Exception ex) { throw ex; }
-            finally { datos.cerrarConexion(); }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
         }
 
         // MODIFICAR DATOS BÁSICOS DEL MÉDICO

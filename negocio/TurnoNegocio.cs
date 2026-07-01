@@ -254,5 +254,45 @@ namespace negocio
             catch (Exception ex) { throw ex; }
             finally { datos.cerrarConexion(); }
         }
+
+        public bool existeTurnoDuplicado(int medicoId, int pacienteId, DateTime fecha, TimeSpan horaInicio)
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta(@"
+            SELECT COUNT(*) AS Cantidad
+            FROM Turnos
+            WHERE CAST(Fecha AS date) = @Fecha
+              AND HoraInicio = @HoraInicio
+              AND EstadoId NOT IN (2, 3)
+              AND (
+                    MedicoId = @MedicoId
+                    OR PacienteId = @PacienteId
+                  )
+        ");
+
+                datos.setearParametro("@Fecha", fecha.Date);
+                datos.setearParametro("@HoraInicio", horaInicio);
+                datos.setearParametro("@MedicoId", medicoId);
+                datos.setearParametro("@PacienteId", pacienteId);
+
+                datos.ejecutarLectura();
+
+                if (datos.Lector.Read())
+                {
+                    return Convert.ToInt32(datos.Lector["Cantidad"]) > 0;
+                }
+
+                return false;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
     }
+
+
 }
